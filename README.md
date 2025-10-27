@@ -1,11 +1,93 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ZTL Care Admin Portal
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+An administrative portal for managing care assistant interview questionnaires and tracking candidate submissions.
+
+## Features
+
+- **Interview Management**: Create, view, edit, and delete care assistant interviews
+- **Structured Questionnaire**: Pre-loaded Care Assistant Interview Questionnaire with sections for:
+  - Career history and opening questions
+  - Role-based competency questions with 0-3 scoring
+  - Mandatory questions
+- **Status Tracking**: Track interview status (Draft, In Review, Completed) with history
+- **Outcome Management**: Record outcomes (Pending, Offer, Reject)
+- **Dashboard Analytics**: View statistics and recent interviews at a glance
+- **Score Calculation**: Automatic total score calculation for competency questions
+
+## Installation
+
+### Prerequisites
+
+- PHP 8.1 or higher
+- Composer
+- SQLite or other database
+
+### Setup
+
+1. **Install dependencies**:
+   ```bash
+   composer install
+   npm install
+   ```
+
+2. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+3. **Set up database** (SQLite):
+   - Ensure `database/database.sqlite` exists
+   - Update `.env`:
+     ```
+     DB_CONNECTION=sqlite
+     DB_DATABASE=/absolute/path/to/database/database.sqlite
+     ```
+
+4. **Run migrations and seed**:
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+   This creates tables and loads the Care Assistant questionnaire.
+
+5. **Start the server**:
+   ```bash
+   php artisan serve
+   ```
+
+6. **Login**:
+   - Email: `test@example.com`
+   - Password: `password`
+
+## Usage
+
+### Creating an Interview
+
+1. Navigate to **Interviews** in the sidebar or click **New Interview** from the dashboard
+2. Fill in candidate details, recruiter name, date, location, etc.
+3. Complete the questionnaire sections
+4. Assign scores (0-3) to competency questions
+5. Set status and outcome
+6. Save the interview
+
+### Viewing and Editing
+
+- **List View**: See all interviews with filters by status and outcome
+- **Detail View**: Review all responses and scores
+- **Edit**: Update any field or response; status changes are tracked in history
+
+### Dashboard
+
+- View total interviews, pending, offers, and rejections
+- Quick access to recent interviews
+
+## Database Schema
+
+- **interview_sections**: Question categories
+- **interview_questions**: Individual questions with input types and scoring
+- **interviews**: Interview metadata (candidate, recruiter, dates, outcome, status)
+- **interview_responses**: Answers and scores per question
+- **interview_status_histories**: Audit log of status changes
 
 ## About Laravel
 

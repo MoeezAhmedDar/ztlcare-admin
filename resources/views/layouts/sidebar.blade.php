@@ -18,20 +18,22 @@
     </li>
 
     <hr class="sidebar-divider">
-    <div class="sidebar-heading">Interface</div>
+    <div class="sidebar-heading">Management</div>
 
-    <!-- Components -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo">
-            <i class="fas fa-fw fa-cog"></i>
-            <span>Components</span>
+    <!-- Interviews -->
+    <li class="nav-item {{ request()->routeIs('interviews.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('interviews.index') }}">
+            <i class="fas fa-fw fa-clipboard-list"></i>
+            <span>Interviews</span>
         </a>
-        <div id="collapseTwo" class="collapse" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="#">Buttons</a>
-                <a class="collapse-item" href="#">Cards</a>
-            </div>
-        </div>
+    </li>
+
+    <!-- Job Applications -->
+    <li class="nav-item {{ request()->routeIs('admin.job-applications.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.job-applications.index') }}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Job Applications</span>
+        </a>
     </li>
 
     <hr class="sidebar-divider d-none d-md-block">

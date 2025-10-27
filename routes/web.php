@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\InterviewController;
 
 // ROOT ROUTE - SMART REDIRECT
 Route::get('/', function () {
@@ -14,7 +15,16 @@ Route::get('/', function () {
 
 // Dashboard (Logged in only)
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $interviewStats = [
+        'total' => \App\Models\Interview::count(),
+        'pending' => \App\Models\Interview::where('outcome', 'pending')->count(),
+        'offers' => \App\Models\Interview::where('outcome', 'offer')->count(),
+        'rejected' => \App\Models\Interview::where('outcome', 'reject')->count(),
+    ];
+    
+    $recentInterviews = \App\Models\Interview::latest()->limit(5)->get();
+    
+    return view('dashboard', compact('interviewStats', 'recentInterviews'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Authentication Routes
@@ -48,3 +58,28 @@ Route::post('/logout', function (Request $request) {
     $request->session()->regenerateToken();
     return redirect('/'); // Back to login
 })->middleware('auth')->name('logout');
+
+// Job Application Routes (Public - No Auth Required)
+Route::prefix('apply')->name('job-application.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\JobApplicationController::class, 'showStep'])->defaults('step', 1)->name('start');
+    Route::get('/step/{step}', [\App\Http\Controllers\JobApplicationController::class, 'showStep'])->name('step');
+    Route::post('/step/{step}', [\App\Http\Controllers\JobApplicationController::class, 'storeStep'])->name('store-step');
+    Route::get('/review', [\App\Http\Controllers\JobApplicationController::class, 'review'])->name('review');
+    Route::post('/submit', [\App\Http\Controllers\JobApplicationController::class, 'submit'])->name('submit');
+    Route::get('/success', [\App\Http\Controllers\JobApplicationController::class, 'success'])->name('success');
+});
+
+// Admin Routes (Auth Required)
+Route::middleware('auth')->group(function () {
+    Route::resource('interviews', InterviewController::class);
+    Route::get('interviews/{interview}/export-pdf', [\App\Http\Controllers\InterviewController::class, 'exportPdf'])->name('interviews.export-pdf');
+    
+    // Job Applications Management
+    Route::prefix('admin/job-applications')->name('admin.job-applications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\JobApplicationController::class, 'index'])->name('index');
+        Route::get('/{jobApplication}', [\App\Http\Controllers\JobApplicationController::class, 'show'])->name('show');
+        Route::get('/{jobApplication}/export-pdf', [\App\Http\Controllers\JobApplicationController::class, 'exportPdf'])->name('export-pdf');
+        Route::patch('/{jobApplication}/status', [\App\Http\Controllers\JobApplicationController::class, 'updateStatus'])->name('update-status');
+        Route::delete('/{jobApplication}', [\App\Http\Controllers\JobApplicationController::class, 'destroy'])->name('destroy');
+    });
+});
