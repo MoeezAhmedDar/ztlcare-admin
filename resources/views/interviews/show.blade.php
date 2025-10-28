@@ -19,6 +19,36 @@
 @endif
 
 <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h2 class="h6 mb-0"><i class="fas fa-link mr-2"></i> Candidate Questionnaire Link</h2>
+    </div>
+    <div class="card-body">
+        @if($interview->is_questionnaire_complete)
+            <div class="alert alert-success mb-3">
+                <i class="fas fa-check-circle mr-2"></i> Questionnaire completed on {{ $interview->questionnaire_submitted_at->format('d M Y, H:i') }}
+            </div>
+        @else
+            <div class="alert alert-warning mb-3">
+                <i class="fas fa-clock mr-2"></i> Waiting for candidate to complete questionnaire
+            </div>
+        @endif
+        
+        <div class="input-group">
+            <input type="text" class="form-control" id="publicLink" value="{{ $interview->public_url }}" readonly>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" onclick="copyLink()">
+                    <i class="fas fa-copy mr-1"></i> Copy Link
+                </button>
+                <a href="{{ $interview->public_url }}" target="_blank" class="btn btn-outline-primary">
+                    <i class="fas fa-external-link-alt mr-1"></i> Open
+                </a>
+            </div>
+        </div>
+        <small class="text-muted">Share this link with the candidate to complete the interview questionnaire.</small>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <h2 class="h5 mb-0">Interview Details</h2>
         <div>
@@ -135,3 +165,28 @@
     <a href="{{ route('interviews.index') }}" class="btn btn-outline-secondary">Back to List</a>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function copyLink() {
+    const linkInput = document.getElementById('publicLink');
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999); // For mobile devices
+    
+    navigator.clipboard.writeText(linkInput.value).then(function() {
+        // Show success message
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(function() {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-primary');
+        }, 2000);
+    });
+}
+</script>
+@endpush

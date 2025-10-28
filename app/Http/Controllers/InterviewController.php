@@ -64,10 +64,14 @@ class InterviewController extends Controller
     {
         [$inputs, $answers, $scores, $statusComment, $questions] = $this->validatePayload($request);
 
-        return DB::transaction(function () use ($inputs, $answers, $scores, $statusComment, $questions) {
+        return DB::transaction(function () use ($inputs, $statusComment) {
+            // Don't set total_score on creation - it will be calculated after candidate submits
+            $inputs['total_score'] = 0;
+            
             $interview = Interview::create($inputs);
 
-            $this->syncResponses($interview, $questions, $answers, $scores);
+            // Don't sync responses on creation - candidate will fill the questionnaire via public link
+            // $this->syncResponses($interview, $questions, $answers, $scores);
 
             if ($statusComment || $interview->status) {
                 $interview->statusHistories()->create([
@@ -78,7 +82,7 @@ class InterviewController extends Controller
 
             return redirect()
                 ->route('interviews.show', $interview)
-                ->with('status', 'Interview saved successfully.');
+                ->with('status', 'Interview created successfully. Share the public link with the candidate to complete the questionnaire.');
         });
     }
 
@@ -206,9 +210,9 @@ class InterviewController extends Controller
             'interviewer_signature_name' => 'nullable|string|max:255',
             'interviewer_signed_at' => 'nullable|date',
             'status_comment' => 'nullable|string',
-            'answers' => 'array',
+            'answers' => 'nullable|array',
             'answers.*' => 'nullable|string',
-            'scores' => 'array',
+            'scores' => 'nullable|array',
             'scores.*' => 'nullable|integer|min:0|max:3',
         ]);
 
@@ -245,6 +249,17 @@ class InterviewController extends Controller
                 $score = null;
             }
 
+            // If interview questionnaire is complete (candidate has submitted), only update scores
+            if ($interview->is_questionnaire_complete && $existing->has($questionId)) {
+                // Update only the score, keep the candidate's answer
+                $existingResponse = $existing[$questionId];
+                if ($score !== null || $question->has_score) {
+                    $existingResponse->update(['score' => $score]);
+                }
+                continue;
+            }
+
+            // For new interviews or if response doesn't exist yet
             if ($answer === null && $score === null) {
                 if ($existing->has($questionId)) {
                     $existing[$questionId]->delete();

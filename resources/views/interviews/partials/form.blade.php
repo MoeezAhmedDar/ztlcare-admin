@@ -103,75 +103,75 @@
     </div>
 </div>
 
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <h2 class="h5 mb-0">Interview Questionnaire</h2>
-        <span class="text-muted small">Use 0–3 scoring guide for scored questions.</span>
-    </div>
-    <div class="card-body">
-        @foreach($sections as $section)
-            <div class="mb-4">
-                <h3 class="h6 text-primary">{{ $section->name }}</h3>
-                @foreach($section->questions as $question)
-                    @php
-                        $answerField = 'answers.' . $question->id;
-                        $scoreField = 'scores.' . $question->id;
-                        $answerValue = old('answers.' . $question->id, optional($responses->get($question->id))->answer);
-                        $scoreValue = old('scores.' . $question->id, optional($responses->get($question->id))->score);
-                    @endphp
-                    <div class="form-group">
-                        <label class="font-weight-bold">{{ $question->prompt }}</label>
-                        @if($question->input_type === 'textarea')
-                            <textarea name="answers[{{ $question->id }}]" class="form-control" rows="3">{{ $answerValue }}</textarea>
-                        @elseif($question->input_type === 'select')
-                            <select name="answers[{{ $question->id }}]" class="form-control">
-                                <option value="">Select an option</option>
-                                @foreach($question->options ?? [] as $option)
-                                    <option value="{{ $option }}" {{ $answerValue === $option ? 'selected' : '' }}>{{ $option }}</option>
-                                @endforeach
-                            </select>
-                        @else
-                            <input type="text" name="answers[{{ $question->id }}]" class="form-control" value="{{ $answerValue }}">
-                        @endif
-                        @error($answerField)
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-
-                        @if($question->has_score)
-                            <div class="mt-2">
-                                <label class="mr-2 mb-0">Score</label>
-                                <select name="scores[{{ $question->id }}]" class="custom-select w-auto d-inline-block">
-                                    <option value="">N/A</option>
-                                    @for($i = 0; $i <= 3; $i++)
-                                        <option value="{{ $i }}" {{ (string) $scoreValue === (string) $i ? 'selected' : '' }}>{{ $i }}</option>
-                                    @endfor
-                                </select>
-                                @error($scoreField)
-                                    <div class="text-danger small">{{ $message }}</div>
-                                @enderror
+@if($interview->exists && $interview->is_questionnaire_complete)
+    {{-- Only show questionnaire section for editing interviews where candidate has submitted --}}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h2 class="h5 mb-0">Interview Questionnaire Responses</h2>
+            <span class="text-muted small">Score the candidate's answers (0-3 for scored questions)</span>
+        </div>
+        <div class="card-body">
+            @foreach($sections as $section)
+                <div class="mb-4">
+                    <h3 class="h6 text-primary border-bottom pb-2">{{ $section->name }}</h3>
+                    @foreach($section->questions as $question)
+                        @php
+                            $scoreField = 'scores.' . $question->id;
+                            $response = $responses->get($question->id);
+                            $scoreValue = old('scores.' . $question->id, optional($response)->score);
+                        @endphp
+                        <div class="form-group border-left pl-3 mb-3">
+                            <label class="font-weight-bold mb-2">{{ $question->prompt }}</label>
+                            
+                            {{-- Display candidate's answer (read-only) --}}
+                            <div class="p-3 bg-light rounded mb-2">
+                                <strong class="text-muted small d-block mb-1">Candidate's Answer:</strong>
+                                <p class="mb-0">{{ $response->answer ?? '—' }}</p>
                             </div>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        @endforeach
-    </div>
-</div>
 
-<div class="card shadow-sm mb-4">
-    <div class="card-body">
-        <div class="form-row">
-            <div class="form-group col-md-4">
-                <label>Total Score</label>
-                <input type="text" class="form-control" value="{{ $interview->total_score ?? old('total_score', '') }}" disabled>
-            </div>
-            <div class="form-group col-md-8">
-                <label for="status_comment">Status comment / history note</label>
-                <textarea name="status_comment" id="status_comment" class="form-control" rows="2">{{ old('status_comment') }}</textarea>
+                            {{-- Interviewer scoring (only for scored questions) --}}
+                            @if($question->has_score)
+                                <div class="mt-2">
+                                    <label class="mr-2 mb-0 font-weight-bold">Interviewer Score (0-3):</label>
+                                    <select name="scores[{{ $question->id }}]" class="custom-select w-auto d-inline-block">
+                                        <option value="">Not Scored</option>
+                                        @for($i = 0; $i <= 3; $i++)
+                                            <option value="{{ $i }}" {{ (string) $scoreValue === (string) $i ? 'selected' : '' }}>{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                    @error($scoreField)
+                                        <div class="text-danger small">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Total Score</label>
+                    <input type="text" class="form-control" value="{{ $interview->total_score ?? old('total_score', '') }}" disabled>
+                </div>
+                <div class="form-group col-md-8">
+                    <label for="status_comment">Status comment / history note</label>
+                    <textarea name="status_comment" id="status_comment" class="form-control" rows="2">{{ old('status_comment') }}</textarea>
+                </div>
             </div>
         </div>
     </div>
-</div>
+@elseif($interview->exists && !$interview->is_questionnaire_complete)
+    {{-- For existing interviews where questionnaire is not yet completed --}}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle mr-2"></i> 
+        <strong>Questionnaire Pending:</strong> The candidate has not yet completed the questionnaire. Share the public link with them to fill it out.
+    </div>
+@endif
 
 <div class="d-flex justify-content-between align-items-center">
     <a href="{{ route('interviews.index') }}" class="btn btn-light">Cancel</a>

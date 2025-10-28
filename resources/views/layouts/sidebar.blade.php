@@ -36,6 +36,17 @@
         </a>
     </li>
 
+    <hr class="sidebar-divider">
+    <div class="sidebar-heading">Configuration</div>
+
+    <!-- Questionnaire -->
+    <li class="nav-item {{ request()->routeIs('questionnaire.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('questionnaire.sections') }}">
+            <i class="fas fa-fw fa-question-circle"></i>
+            <span>Questionnaire</span>
+        </a>
+    </li>
+
     <hr class="sidebar-divider d-none d-md-block">
     
     <!-- Sidebar Toggler -->

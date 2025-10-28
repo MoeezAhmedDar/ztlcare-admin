@@ -59,6 +59,13 @@ Route::post('/logout', function (Request $request) {
     return redirect('/'); // Back to login
 })->middleware('auth')->name('logout');
 
+// Public Interview Questionnaire (No Auth Required)
+Route::prefix('interview')->name('interview.public.')->group(function () {
+    Route::get('/{token}', [\App\Http\Controllers\PublicInterviewController::class, 'show'])->name('show');
+    Route::post('/{token}/submit', [\App\Http\Controllers\PublicInterviewController::class, 'submit'])->name('submit');
+    Route::get('/{token}/completed', [\App\Http\Controllers\PublicInterviewController::class, 'completed'])->name('completed');
+});
+
 // Job Application Routes (Public - No Auth Required)
 Route::prefix('apply')->name('job-application.')->group(function () {
     Route::get('/', [\App\Http\Controllers\JobApplicationController::class, 'showStep'])->defaults('step', 1)->name('start');
@@ -81,5 +88,26 @@ Route::middleware('auth')->group(function () {
         Route::get('/{jobApplication}/export-pdf', [\App\Http\Controllers\JobApplicationController::class, 'exportPdf'])->name('export-pdf');
         Route::patch('/{jobApplication}/status', [\App\Http\Controllers\JobApplicationController::class, 'updateStatus'])->name('update-status');
         Route::delete('/{jobApplication}', [\App\Http\Controllers\JobApplicationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Questionnaire Management
+    Route::prefix('questionnaire')->name('questionnaire.')->group(function () {
+        // Sections
+        Route::get('/sections', [\App\Http\Controllers\QuestionnaireController::class, 'sections'])->name('sections');
+        Route::get('/sections/create', [\App\Http\Controllers\QuestionnaireController::class, 'createSection'])->name('sections.create');
+        Route::post('/sections', [\App\Http\Controllers\QuestionnaireController::class, 'storeSection'])->name('sections.store');
+        Route::get('/sections/{section}/edit', [\App\Http\Controllers\QuestionnaireController::class, 'editSection'])->name('sections.edit');
+        Route::put('/sections/{section}', [\App\Http\Controllers\QuestionnaireController::class, 'updateSection'])->name('sections.update');
+        Route::delete('/sections/{section}', [\App\Http\Controllers\QuestionnaireController::class, 'destroySection'])->name('sections.destroy');
+        Route::post('/sections/reorder', [\App\Http\Controllers\QuestionnaireController::class, 'reorderSections'])->name('sections.reorder');
+        
+        // Questions
+        Route::get('/sections/{section}/questions', [\App\Http\Controllers\QuestionnaireController::class, 'questions'])->name('questions');
+        Route::get('/sections/{section}/questions/create', [\App\Http\Controllers\QuestionnaireController::class, 'createQuestion'])->name('questions.create');
+        Route::post('/sections/{section}/questions', [\App\Http\Controllers\QuestionnaireController::class, 'storeQuestion'])->name('questions.store');
+        Route::get('/sections/{section}/questions/{question}/edit', [\App\Http\Controllers\QuestionnaireController::class, 'editQuestion'])->name('questions.edit');
+        Route::put('/sections/{section}/questions/{question}', [\App\Http\Controllers\QuestionnaireController::class, 'updateQuestion'])->name('questions.update');
+        Route::delete('/sections/{section}/questions/{question}', [\App\Http\Controllers\QuestionnaireController::class, 'destroyQuestion'])->name('questions.destroy');
+        Route::post('/sections/{section}/questions/reorder', [\App\Http\Controllers\QuestionnaireController::class, 'reorderQuestions'])->name('questions.reorder');
     });
 });

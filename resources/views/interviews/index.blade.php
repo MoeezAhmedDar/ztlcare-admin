@@ -22,6 +22,7 @@
                         <th>Recruiter</th>
                         <th>Date</th>
                         <th>Location</th>
+                        <th>Questionnaire</th>
                         <th>Status</th>
                         <th>Outcome</th>
                         <th>Total Score</th>
@@ -35,6 +36,13 @@
                             <td>{{ $interview->recruiter_name ?? '—' }}</td>
                             <td>{{ optional($interview->interview_date)->format('d M Y') ?? '—' }}</td>
                             <td>{{ $interview->location ?? '—' }}</td>
+                            <td>
+                                @if($interview->is_questionnaire_complete)
+                                    <span class="badge badge-success"><i class="fas fa-check mr-1"></i> Complete</span>
+                                @else
+                                    <span class="badge badge-warning"><i class="fas fa-clock mr-1"></i> Pending</span>
+                                @endif
+                            </td>
                             <td><span class="badge badge-info text-uppercase">{{ $statusOptions[$interview->status] ?? ucfirst($interview->status) }}</span></td>
                             <td><span class="badge badge-secondary text-uppercase">{{ $outcomeOptions[$interview->outcome] ?? ucfirst($interview->outcome) }}</span></td>
                             <td>{{ $interview->total_score ?? '—' }}</td>
@@ -59,7 +67,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-4">No interviews yet. <a href="{{ route('interviews.create') }}">Create the first one.</a></td>
+                            <td colspan="9" class="text-center py-4">No interviews yet. <a href="{{ route('interviews.create') }}">Create the first one.</a></td>
                         </tr>
                     @endforelse
                 </tbody>
