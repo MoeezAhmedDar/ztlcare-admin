@@ -36,6 +36,13 @@
         </a>
     </li>
 
+    <li class="nav-item {{ request()->routeIs('documents.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('documents.index')}}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Hr Documents</span>
+        </a>
+    </li>
+
     <hr class="sidebar-divider d-none d-md-block">
     
     <!-- Sidebar Toggler -->
