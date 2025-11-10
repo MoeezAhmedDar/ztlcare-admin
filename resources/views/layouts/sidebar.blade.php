@@ -43,6 +43,45 @@
         </a>
     </li>
 
+     <li class="nav-item {{ request()->routeIs('invite.portal') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('invite.portal')}}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Invite Letter</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ request()->routeIs('offer.portal') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('offer.portal')}}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Offer Letter</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ request()->routeIs('rejection.portal') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('rejection.portal')}}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Rejection Letter</span>
+        </a>
+    </li>
+
+    <li class="nav-item {{ request()->routeIs('character.portal') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('character.portal')}}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Character Certificate</span>
+        </a>
+    </li>
+
+    <hr class="sidebar-divider">
+    <div class="sidebar-heading">Configuration</div>
+
+    <!-- Questionnaire -->
+    <li class="nav-item {{ request()->routeIs('questionnaire.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('questionnaire.sections') }}">
+            <i class="fas fa-fw fa-question-circle"></i>
+            <span>Questionnaire</span>
+        </a>
+    </li>
+
     <hr class="sidebar-divider d-none d-md-block">
     
     <!-- Sidebar Toggler -->

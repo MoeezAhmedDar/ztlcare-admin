@@ -4,6 +4,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\InterviewController;
+use App\Http\Controllers\InviteController;
+use App\Http\Controllers\OfferController;
+use App\Http\Controllers\RejectionController;
+use App\Http\Controllers\CharacterController;
+
 
 // ROOT ROUTE - SMART REDIRECT
 Route::get('/', function () {
@@ -59,6 +64,13 @@ Route::post('/logout', function (Request $request) {
     return redirect('/'); // Back to login
 })->middleware('auth')->name('logout');
 
+// Public Interview Questionnaire (No Auth Required)
+Route::prefix('interview')->name('interview.public.')->group(function () {
+    Route::get('/{token}', [\App\Http\Controllers\PublicInterviewController::class, 'show'])->name('show');
+    Route::post('/{token}/submit', [\App\Http\Controllers\PublicInterviewController::class, 'submit'])->name('submit');
+    Route::get('/{token}/completed', [\App\Http\Controllers\PublicInterviewController::class, 'completed'])->name('completed');
+});
+
 // Job Application Routes (Public - No Auth Required)
 Route::prefix('apply')->name('job-application.')->group(function () {
     Route::get('/', [\App\Http\Controllers\JobApplicationController::class, 'showStep'])->defaults('step', 1)->name('start');
@@ -83,7 +95,47 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{jobApplication}', [\App\Http\Controllers\JobApplicationController::class, 'destroy'])->name('destroy');
     });
 
+    // Questionnaire Management
+    Route::prefix('questionnaire')->name('questionnaire.')->group(function () {
+        // Sections
+        Route::get('/sections', [\App\Http\Controllers\QuestionnaireController::class, 'sections'])->name('sections');
+        Route::get('/sections/create', [\App\Http\Controllers\QuestionnaireController::class, 'createSection'])->name('sections.create');
+        Route::post('/sections', [\App\Http\Controllers\QuestionnaireController::class, 'storeSection'])->name('sections.store');
+        Route::get('/sections/{section}/edit', [\App\Http\Controllers\QuestionnaireController::class, 'editSection'])->name('sections.edit');
+        Route::put('/sections/{section}', [\App\Http\Controllers\QuestionnaireController::class, 'updateSection'])->name('sections.update');
+        Route::delete('/sections/{section}', [\App\Http\Controllers\QuestionnaireController::class, 'destroySection'])->name('sections.destroy');
+        Route::post('/sections/reorder', [\App\Http\Controllers\QuestionnaireController::class, 'reorderSections'])->name('sections.reorder');
+        
+        // Questions
+        Route::get('/sections/{section}/questions', [\App\Http\Controllers\QuestionnaireController::class, 'questions'])->name('questions');
+        Route::get('/sections/{section}/questions/create', [\App\Http\Controllers\QuestionnaireController::class, 'createQuestion'])->name('questions.create');
+        Route::post('/sections/{section}/questions', [\App\Http\Controllers\QuestionnaireController::class, 'storeQuestion'])->name('questions.store');
+        Route::get('/sections/{section}/questions/{question}/edit', [\App\Http\Controllers\QuestionnaireController::class, 'editQuestion'])->name('questions.edit');
+        Route::put('/sections/{section}/questions/{question}', [\App\Http\Controllers\QuestionnaireController::class, 'updateQuestion'])->name('questions.update');
+        Route::delete('/sections/{section}/questions/{question}', [\App\Http\Controllers\QuestionnaireController::class, 'destroyQuestion'])->name('questions.destroy');
+        Route::post('/sections/{section}/questions/reorder', [\App\Http\Controllers\QuestionnaireController::class, 'reorderQuestions'])->name('questions.reorder');
+    });
 
     Route::get('/documents', [App\Http\Controllers\DocumentController::class, 'index'])->name('documents.index');
 
+   // Route::get('/invite-letter/pdf', [App\Http\Controllers\DocumentController::class, 'generate'])->name('invite-letter.pdf');
+
+   // routes/web.php
+
+    Route::get('/invite-portal', [InviteController::class, 'index'])->name('invite.portal');
+    Route::post('/invite-store', [InviteController::class, 'store'])->name('invite.store');
+    Route::get('/invite-download/{id}', [InviteController::class, 'download'])->name('invite.download');
+
+    Route::get('/offer-portal', [OfferController::class, 'index'])->name('offer.portal');
+    Route::post('/offer-store', [OfferController::class, 'store'])->name('offer.store');
+    Route::get('/offer-download/{id}', [OfferController::class, 'download'])->name('offer.download');
+
+    Route::get('/rejection-portal', [RejectionController::class, 'index'])->name('rejection.portal');
+    Route::post('/rejection-store', [RejectionController::class, 'store'])->name('rejection.store');
+    Route::get('/rejection-download/{id}', [RejectionController::class, 'download'])->name('rejection.download');
+    Route::get('/ref-download', [RejectionController::class, 'downloadref'])->name('ref.download');
+
+    Route::get('/character-portal', [CharacterController::class, 'index'])->name('character.portal');
+    Route::post('/character-store', [CharacterController::class, 'store'])->name('character.store');
+    Route::get('/character-download/{id}', [CharacterController::class, 'download'])->name('character.download');
 });
