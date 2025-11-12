@@ -10,9 +10,9 @@
         }
         body { 
             font-family: "DejaVu Sans", sans-serif; 
-            font-size: 12px; 
+            font-size: 13px; 
             color: #000; 
-            line-height: 1.2; 
+            line-height: 1.3; 
         }
         .header { 
             display: table; 
@@ -22,12 +22,10 @@
         .header-left { 
             display: table-cell; 
             vertical-align: top; 
-            width: 50%; 
+            width: 55%; 
             font-size: 12px; 
-            line-height: 1.3; 
-        }
-        .header-left strong { 
-            font-size: 12.5px; 
+            line-height: 1.35; 
+            font-weight: normal; 
         }
         .header-right { 
             display: table-cell; 
@@ -35,12 +33,12 @@
             vertical-align: top; 
         }
         .header-right img { 
-            width: 110px; 
+            width: 200px; 
         }
         h1 { 
             text-align: center; 
-            font-size: 14px; 
-            margin: 8px 0 10px 0; 
+            font-size: 18px; 
+            margin: 20px 0 20px 0; 
             font-weight: bold;
         }
         h2 { 
@@ -56,26 +54,55 @@
         }
         th, td { 
             border: 1px solid #7fb7cf; 
-            padding: 3px 5px; 
+            padding: 6px 8px; 
             vertical-align: top; 
-            font-size: 12px; 
+            font-size: 13px; 
         }
         .section-header { 
-            background: #7fc4dd; 
-            color: #000; 
-            font-weight: bold; 
-            padding: 4px 6px; 
-            font-size: 12px; 
+            background: #62c2dd; 
+            color: #fff; 
+            font-weight: normal; 
+            padding: 6px 8px; 
+            font-size: 13px; 
+        }
+        .field-label,
+        .section-header { 
+            background: #62c2dd; 
+            color: #fff; 
+            font-weight: normal; 
+            padding: 8px 10px; 
+            font-size: 13.5px; 
         }
         .label-col { 
-            background: #d5eef7; 
-            font-weight: bold; 
+            background: #fff; 
             width: 35%; 
+        }
+        .key-col {
+            width: 24%;
+            background: #fff;
+            padding-right: 6px;
+            font-size: 10px;
+        }
+        .key-title {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .question-col {
+            width: 28%;
+        }
+        .answer-col {
+            width: 40%;
         }
         .score-col {
             width: 8%;
             text-align: center;
             background: #f9f9f9;
+        }
+        .answer-box {
+            min-height: 38px;
+            border-top: 1px solid #b7d4e5;
+            margin-top: 4px;
+            padding-top: 4px;
         }
         .page-break { 
             page-break-after: always; 
@@ -92,21 +119,34 @@
         .bullet-list { 
             margin: 2px 0; 
             padding-left: 10px; 
-            font-size: 10px; 
+            font-size: 11px; 
         }
         .bullet-list li { 
             margin-bottom: 1px; 
         }
+        .criteria-table th {
+            background: #62c2dd;
+            color: #fff;
+            font-weight: normal;
+            padding: 8px 10px;
+            font-size: 12.5px;
+        }
         .criteria-table td {
-            font-size: 10px;
-            padding: 2px 4px;
+            font-size: 12px;
+            padding: 5px 7px;
+        }
+        .details-table {
+            margin-top: 12px;
+        }
+        .score-label {
+            font-size: 13px;
+            font-weight: bold;
         }
         .intro-section {
-            font-size: 10px;
+            font-size: 12px;
             margin-bottom: 6px;
         }
         .intro-section li {
-            margin-bottom: 2px;
         }
     </style>
 </head>
@@ -120,9 +160,10 @@
 {{-- PAGE 1: HEADER & SCORING CRITERIA --}}
 <div class="header">
     <div class="header-left">
-        <strong>358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA</strong><br>
-        <strong>T:</strong> 01698 701199<br>
-        <strong>E:</strong> info@ztl.care <strong>W:</strong> www.ztl.care
+        358 Brandon Street Motherwell<br>
+        North Lanarkshire ML1 1XA<br>
+        T: 01698 701199<br>
+        E: info@ztl.care &nbsp;&nbsp; W: www.ztl.care
     </div>
     <div class="header-right">
         @if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif
@@ -131,29 +172,28 @@
 
 <h1>Interview Questionnaire – Carer Support Worker</h1>
 
-<table>
+<table class="details-table">
     <tr>
-        <td class="section-header" style="width:20%;">Recruiters Name:</td>
+        <td class="field-label" style="width:24%;">Recruiters Name:</td>
         <td style="width:30%;">{{ $interview->recruiter_name }}</td>
-        <td class="section-header" style="width:20%;">Date of Interview:</td>
-        <td style="width:30%;">{{ $formatDate($interview->interview_date) }}</td>
+        <td class="field-label" style="width:20%;">Date of Interview:</td>
+        <td colspan="2" style="width:26%;">{{ $formatDate($interview->interview_date) }}</td>
     </tr>
     <tr>
-        <td class="section-header">Candidates Name:</td>
-        <td colspan="3">{{ $interview->candidate_name }}</td>
+        <td class="field-label">Candidates Name:</td>
+        <td colspan="4">{{ $interview->candidate_name }}</td>
     </tr>
     <tr>
-        <td class="section-header">Location/Branch:</td>
-        <td colspan="3">{{ $interview->location }}</td>
-    </tr>
-    <tr>
-        <td class="section-header">Outcome:</td>
-        <td colspan="3">(Please Circle) &nbsp;&nbsp; Offer &nbsp;&nbsp; Reject</td>
+        <td class="field-label">Location/Branch:</td>
+        <td>{{ $interview->location }}</td>
+        <td class="field-label" style="width:20%;">Outcome:<br>(Please Circle)</td>
+        <td style="width:13%; text-align:center;">Offer</td>
+        <td style="width:13%; text-align:center;">Reject</td>
     </tr>
 </table>
 
 <h2>Notes to interviewer</h2>
-<p style="font-size:8px; margin-bottom:4px;">The following guidance should be used to ensure consistency and equal opportunities for all candidates. There are model answers provided in the left-hand column. The following criteria should be used as a scoring guide with a maximum award of 3 points per question.</p>
+<p style="font-size:11px; margin-bottom:8px;">The following guidance should be used to ensure consistency and equal opportunities for all candidates. There are model answers provided in the left-hand column. The following criteria should be used as a scoring guide with a maximum award of 3 points per question.</p>
 
 <table class="criteria-table">
     <tr class="section-header">
@@ -162,19 +202,19 @@
     </tr>
     <tr>
         <td style="text-align:center; font-weight:bold;">0</td>
-        <td><strong>Poor</strong> - Failed to answer the question/ failed to demonstrate any knowledge in area/failed to provide or identify any of the sample answers</td>
+        <td><span class="score-label">Poor</span> - Failed to answer the question/ failed to demonstrate any knowledge in area/failed to provide or identify any of the sample answers</td>
     </tr>
     <tr>
         <td style="text-align:center; font-weight:bold;">1</td>
-        <td><strong>Average</strong> - Demonstrated limited knowledge in area/answer was brief with little detail/1-2 sample answers given</td>
+        <td><span class="score-label">Average</span> - Demonstrated limited knowledge in area/answer was brief with little detail/1-2 sample answers given</td>
     </tr>
     <tr>
         <td style="text-align:center; font-weight:bold;">2</td>
-        <td><strong>Good</strong> - Demonstrated sound knowledge in area/answer was detailed and included sound explanation/ 2-4 sample answers given</td>
+        <td><span class="score-label">Good</span> - Demonstrated sound knowledge in area/answer was detailed and included sound explanation/ 2-4 sample answers given</td>
     </tr>
     <tr>
         <td style="text-align:center; font-weight:bold;">3</td>
-        <td><strong>Excellent</strong> - Demonstrated extensive knowledge in area/answer was in depth with rationale and relevant example(s)/ 4+ sample answers provided</td>
+        <td><span class="score-label">Excellent</span> - Demonstrated extensive knowledge in area/answer was in depth with rationale and relevant example(s)/ 4+ sample answers provided</td>
     </tr>
 </table>
 
@@ -183,9 +223,10 @@
 {{-- PAGE 2: INTRODUCTIONS & OPENING QUESTIONS --}}
 <div class="header">
     <div class="header-left">
-        <strong>358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA</strong><br>
-        <strong>T:</strong> 01698 701199<br>
-        <strong>E:</strong> info@ztl.care <strong>W:</strong> www.ztl.care
+        358 Brandon Street Motherwell<br>
+        North Lanarkshire ML1 1XA<br>
+        T: 01698 701199<br>
+        E: info@ztl.care &nbsp;&nbsp; W: www.ztl.care
     </div>
     <div class="header-right">
         @if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif
@@ -244,9 +285,10 @@
 {{-- PAGE 3: ROLE-BASED COMPETENCY QUESTIONS (1-5) --}}
 <div class="header">
     <div class="header-left">
-        <strong>358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA</strong><br>
-        <strong>T:</strong> 01698 701199<br>
-        <strong>E:</strong> info@ztl.care <strong>W:</strong> www.ztl.care
+        358 Brandon Street Motherwell<br>
+        North Lanarkshire ML1 1XA<br>
+        T: 01698 701199<br>
+        E: info@ztl.care &nbsp;&nbsp; W: www.ztl.care
     </div>
     <div class="header-right">
         @if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif
@@ -255,86 +297,70 @@
 
 <table>
     <tr>
-        <td class="section-header" colspan="3">B. Role based competency questions (Please complete below section with both comment and scores)</td>
+        <td class="section-header" colspan="4">B. Role based competency questions (Please complete below section with both comment and scores)</td>
     </tr>
     <tr class="section-header">
-        <th style="width:25%;">Key Skill area being assessed</th>
-        <th style="width:67%;">Question</th>
+        <th style="width:24%;">Key skill area being assessed</th>
+        <th style="width:22%;">Question</th>
+        <th style="width:46%;">Answer</th>
         <th style="width:8%;">Score</th>
     </tr>
     <tr>
-        <td class="label-col">
-            <strong>Role skills/suitability</strong><br>
-            <ul class="bullet-list">
-                <li>Good listener</li>
-                <li>Communication</li>
-                <li>Patience</li>
-                <li>Motivated</li>
-                <li>Flexible</li>
-                <li>Friendly</li>
-                <li>Committed</li>
-                <li>Empathy</li>
-                <li>Caring</li>
-                <li>Punctual</li>
-            </ul>
+        <td class="key-col" rowspan="2">
+            <strong>Role skills / suitability</strong><br>
+            Good listener<br>
+            Communication<br>
+            Patience<br>
+            Motivated<br>
+            Flexible<br>
+            Friendly<br>
+            Committed<br>
+            Empathy<br>
+            Caring<br>
+            Punctual<br>
         </td>
-        <td>
-            <strong>1. What qualities/skills do you think that makes a good care worker?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">1. What qualities or skills do you think make a good care worker?</td>
+        <td class="answer-col"><div class="answer-box"></div></td>
         <td class="score-col"></td>
     </tr>
     <tr>
-        <td class="label-col"></td>
-        <td>
-            <strong>2. What are your strength and weaknesses?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">2. What are your strengths and weaknesses?</td>
+        <td class="answer-col"><div class="answer-box"></div></td>
         <td class="score-col"></td>
     </tr>
     <tr>
-        <td class="label-col">
+        <td class="key-col" rowspan="2">
             <strong>Teamwork</strong><br>
-            <ul class="bullet-list">
-                <li>Utilize all communication channels</li>
-                <li>Be supportive/open</li>
-                <li>Listen & respect others' views and opinions</li>
-                <li>Encourage/motivate</li>
-                <li>Be flexible</li>
-                <li>Friendly</li>
-                <li>Sharing</li>
-            </ul>
+            Use all communication channels<br>
+            Be supportive and open<br>
+            Respect others' views<br>
+            Encourage and motivate<br>
+            Be flexible<br>
+            Friendly<br>
+            Sharing<br>
         </td>
-        <td>
-            <strong>3. What do you think makes a good team player?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">3. What do you think makes a good team player?</td>
+        <td class="answer-col"><div class="answer-box"></div></td>
         <td class="score-col"></td>
     </tr>
     <tr>
-        <td class="label-col"></td>
-        <td>
-            <strong>4. Give an example of where you supported your team?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">4. Give an example of where you supported your team.</td>
+        <td class="answer-col"><div class="answer-box"></div></td>
         <td class="score-col"></td>
     </tr>
     <tr>
-        <td class="label-col">
-            <strong>Problem solving/initiative</strong><br>
-            <ul class="bullet-list">
-                <li>Think on feet</li>
-                <li>Think outside of box/creative ideas</li>
-                <li>Be resilient – don't give up</li>
-                <li>Identify range of options/solutions</li>
-                <li>Decision making skills</li>
-                <li>Access the degree of the problem</li>
-            </ul>
+        <td class="key-col">
+            <strong>Problem solving / initiative</strong><br>
+            Think on your feet<br>
+            Offer creative ideas<br>
+            Be resilient<br>
+            Identify solutions<br>
+            Good decision making<br>
+            Assess the problem
+            
         </td>
-        <td>
-            <strong>5. Tell us about a situation you were required to use your initiative</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">5. Tell us about a situation where you were required to use your initiative.</td>
+        <td class="answer-col"><div class="answer-box"></div></td>
         <td class="score-col"></td>
     </tr>
 </table>
@@ -344,9 +370,10 @@
 {{-- PAGE 4: COMPETENCY QUESTIONS (6-10) --}}
 <div class="header">
     <div class="header-left">
-        <strong>358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA</strong><br>
-        <strong>T:</strong> 01698 701199<br>
-        <strong>E:</strong> info@ztl.care <strong>W:</strong> www.ztl.care
+        358 Brandon Street Motherwell<br>
+        North Lanarkshire ML1 1XA<br>
+        T: 01698 701199<br>
+        E: info@ztl.care &nbsp;&nbsp; W: www.ztl.care
     </div>
     <div class="header-right">
         @if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif
@@ -354,73 +381,58 @@
 </div>
 
 <table>
-    <tr>
-        <td class="label-col" style="width:25%;">
-            <strong>Call the office</strong><br>
-            <strong>Get medical help</strong>
-        </td>
-        <td style="width:67%;">
-            <strong>6. You entered a Service User's room and found him/her unconscious/unresponsive what would be the first action you would take?</strong><br>
-            <div style="min-height:30px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
-        <td class="score-col" style="width:8%;"></td>
+    <tr class="section-header">
+        <th style="width:24%;">Key skill area being assessed</th>
+        <th style="width:22%;">Question</th>
+        <th style="width:46%;">Answer</th>
+        <th style="width:8%;">Score</th>
     </tr>
     <tr>
-        <td class="label-col">
-            <strong>Try to calm situation, give space and time</strong><br>
-            <strong>Show empathy</strong><br>
-            <strong>Listen</strong><br>
-            <strong>Understand situation</strong><br>
-            <strong>Divert attention to positive activity</strong><br>
-            <strong>Remove from environment/situation</strong>
+        <td class="key-col">
+            <strong>Emergency response</strong><br>
+            Call the office<br>
+            Seek medical help
         </td>
-        <td>
-            <strong>7. If you were unable to gain access entering in an allocated service. What would you do?</strong><br>
-            <div style="min-height:30px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">6. You enter a service user's room and find them unconscious or unresponsive. What is the first action you take?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:42px;"></div></td>
         <td class="score-col"></td>
     </tr>
     <tr>
-        <td class="label-col"></td>
-        <td>
-            <strong>8. How would you deal with a Service User that was aggressive?</strong><br>
-            <div style="min-height:30px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
+        <td class="key-col" rowspan="2">
+            <strong>De-escalation</strong><br>
+            Stay calm and give space<br>
+            Listen with empathy<br>
+            Understand the situation<br>
+            Divert to positive activity<br>
+            Remove from risk if required
         </td>
+        <td class="question-col">7. If you cannot gain access to an allocated service, what would you do?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:42px;"></div></td>
         <td class="score-col"></td>
     </tr>
     <tr>
-        <td class="label-col">
+        <td class="question-col">8. How would you deal with a service user who was aggressive?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:42px;"></div></td>
+        <td class="score-col"></td>
+    </tr>
+    <tr>
+        <td class="key-col" rowspan="2">
             <strong>Communication</strong><br>
-            <ul class="bullet-list" style="font-style:italic;">
-                <li>Listening</li>
-                <li>Talking</li>
-                <li>Makaton</li>
-                <li>Signing</li>
-                <li>Touch</li>
-                <li>Eye contact</li>
-                <li>Objects/symbols</li>
-                <li>Pictures/ photos</li>
-                <li>PCs, electronic devices</li>
-                <li>Show range of options</li>
-                <li>Body language techniques</li>
-                <li>Interaction with colleagues</li>
-                <li>Inform the office</li>
-                <li>Makes notes in the care plan</li>
-                <li>Get medical assistance</li>
-            </ul>
+            Listening and talking<br>
+            Makaton or signing<br>
+            Touch and eye contact<br>
+            Visual tools and technology<br>
+            Body language techniques<br>
+            Team communication and notes<br>
+            Involve external support
         </td>
-        <td>
-            <strong>9. How would you support individuals with limited communication skills? If they were unable to speak, hear or see.</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">9. How would you support individuals with limited communication skills?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:50px;"></div></td>
         <td class="score-col"></td>
     </tr>
     <tr>
-        <td class="label-col"></td>
-        <td>
-            <strong>10. How would you inform the team of any issues/problems/concerns that you may of have about the service user?</strong><br>
-            <div style="min-height:30px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">10. How would you inform the team of any issues, problems or concerns about the service user?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:42px;"></div></td>
         <td class="score-col"></td>
     </tr>
 </table>
@@ -430,9 +442,10 @@
 {{-- PAGE 5: COMPETENCY QUESTIONS (11-13) --}}
 <div class="header">
     <div class="header-left">
-        <strong>358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA</strong><br>
-        <strong>T:</strong> 01698 701199<br>
-        <strong>E:</strong> info@ztl.care <strong>W:</strong> www.ztl.care
+        358 Brandon Street Motherwell<br>
+        North Lanarkshire ML1 1XA<br>
+        T: 01698 701199<br>
+        E: info@ztl.care &nbsp;&nbsp; W: www.ztl.care
     </div>
     <div class="header-right">
         @if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif
@@ -440,55 +453,48 @@
 </div>
 
 <table>
-    <tr>
-        <td class="label-col" style="width:25%;">
-            <strong>Prompting Independence</strong><br>
-            <ul class="bullet-list" style="font-style:italic;">
-                <li>Balancing right to make choices & duty of care</li>
-                <li>Encourage informed choices</li>
-                <li>Listen to and show respect to individuals we support</li>
-                <li>Activities with and not for the individuals we support</li>
-                <li>Speaking to other relevant people (e.g., relevant professionals or family carers</li>
-                <li>Mental support</li>
-                <li>Cooking for them</li>
-                <li>Communication</li>
-            </ul>
-        </td>
-        <td style="width:67%;">
-            <strong>11. How would you promote the independence of a service user?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
-        <td class="score-col" style="width:8%;"></td>
+    <tr class="section-header">
+        <th style="width:24%;">Key skill area being assessed</th>
+        <th style="width:22%;">Question</th>
+        <th style="width:46%;">Answer</th>
+        <th style="width:8%;">Score</th>
     </tr>
     <tr>
-        <td class="label-col">
-            <strong>Assessing risk</strong><br>
-            <strong>Report it to the office</strong><br>
-            <strong>Assess if there is imminent danger</strong><br>
-            <strong>Speak to maintenance person from that service; inform the manager of the service</strong>
+        <td class="key-col">
+            <strong>Prompting independence</strong><br>
+            Balance choice with duty of care<br>
+            Encourage informed choices<br>
+            Show respect to individuals supported<br>
+            Support activities with individuals<br>
+            Engage relevant professionals or family<br>
+            Provide mental and practical support
         </td>
-        <td>
-            <strong>12. What would you do if you will find a faulty equipment in an allocated service?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">11. How would you promote the independence of a service user?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:48px;"></div></td>
         <td class="score-col"></td>
     </tr>
     <tr>
-        <td class="label-col">
-            <strong>Hygiene/Diet</strong><br>
-            <ul class="bullet-list">
-                <li>Wear gloves</li>
-                <li>Hand Washing</li>
-                <li>Aprons</li>
-                <li>Uniforms</li>
-                <li>Nutrition and Hydration</li>
-                <li>Promoting a well-balanced diet which will meet the service User's needs.</li>
-            </ul>
+        <td class="key-col">
+            <strong>Assessing risk</strong><br>
+            Report concerns to the office<br>
+            Evaluate immediate danger<br>
+            Contact maintenance support<br>
+            Inform the service manager
         </td>
-        <td>
-            <strong>13. What is your understanding about Dietitians and supplements? How would you support a service user who is at high risk of malnutrition?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
+        <td class="question-col">12. What would you do if you found faulty equipment in an allocated service?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:48px;"></div></td>
+        <td class="score-col"></td>
+    </tr>
+    <tr>
+        <td class="key-col">
+            <strong>Hygiene and diet</strong><br>
+            Hand hygiene and protective wear<br>
+            Appropriate uniforms<br>
+            Nutrition and hydration<br>
+            Promoting balanced diets
         </td>
+        <td class="question-col">13. What is your understanding of dietitians and supplements? How would you support a service user at high risk of malnutrition?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:48px;"></div></td>
         <td class="score-col"></td>
     </tr>
 </table>
@@ -498,9 +504,10 @@
 {{-- PAGE 6: COMPETENCY QUESTIONS (14-16) --}}
 <div class="header">
     <div class="header-left">
-        <strong>358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA</strong><br>
-        <strong>T:</strong> 01698 701199<br>
-        <strong>E:</strong> info@ztl.care <strong>W:</strong> www.ztl.care
+        358 Brandon Street Motherwell<br>
+        North Lanarkshire ML1 1XA<br>
+        T: 01698 701199<br>
+        E: info@ztl.care &nbsp;&nbsp; W: www.ztl.care
     </div>
     <div class="header-right">
         @if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif
@@ -508,52 +515,45 @@
 </div>
 
 <table>
-    <tr>
-        <td class="label-col" style="width:25%;">
-            <strong>Abuse</strong><br>
-            <ul class="bullet-list" style="font-style:italic;">
-                <li>Violation of human/civil rights</li>
-                <li>Many forms single/ repeated act</li>
-                <li>Can be subtle</li>
-                <li>Omission to act</li>
-                <li>Crossed boundaries</li>
-                <li>Can be: Physical/Sexual/Verbal/Psychological/ Emotional/financial/ theft/ Neglect</li>
-            </ul>
-        </td>
-        <td style="width:67%;">
-            <strong>14 Can you give me 3 types of abuse?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
-        <td class="score-col" style="width:8%;"></td>
+    <tr class="section-header">
+        <th style="width:24%;">Key skill area being assessed</th>
+        <th style="width:22%;">Question</th>
+        <th style="width:46%;">Answer</th>
+        <th style="width:8%;">Score</th>
     </tr>
     <tr>
-        <td class="label-col">
-            <strong>Act immediately</strong><br>
-            <strong>Report it to Line Mgr.</strong><br>
-            <strong>Refer to whistleblowing policy</strong>
+        <td class="key-col">
+            <strong>Abuse awareness</strong><br>
+            Human and civil rights<br>
+            Single or repeated acts<br>
+            Physical, sexual, verbal, psychological<br>
+            Emotional, financial, neglect
         </td>
-        <td>
-            <strong>15. What should you do if you suspected a Service User is being abused?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
-        </td>
+        <td class="question-col">14. Can you give three types of abuse?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:48px;"></div></td>
         <td class="score-col"></td>
     </tr>
     <tr>
-        <td class="label-col">
-            <strong>Mental Heath</strong><br>
-            <ul class="bullet-list">
-                <li>Dementia</li>
-                <li>Depression</li>
-                <li>Anger</li>
-                <li>Drugs</li>
-                <li>Eating disorder</li>
-                <li>Panic attacks</li>
-            </ul>
+        <td class="key-col">
+            <strong>Reporting concerns</strong><br>
+            Act immediately<br>
+            Report to line manager<br>
+            Follow whistleblowing policy
         </td>
-        <td>
-            <strong>16. You identify a resident with advanced dementia and challenging behavior in a communal area being aggressive near others. How would you manage this situation?</strong><br>
-            <div style="min-height:40px; border-top:1px solid #ccc; margin-top:3px; padding-top:3px;"></div>
+        <td class="question-col">15. What should you do if you suspect a service user is being abused?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:48px;"></div></td>
+        <td class="score-col"></td>
+    </tr>
+    <tr>
+        <td class="key-col">
+            <strong>Mental health</strong><br>
+            Dementia and depression<br>
+            Anger and substance use<br>
+            Eating disorders<br>
+            Panic attacks
         </td>
+        <td class="question-col">16. You identify a resident with advanced dementia and challenging behaviour in a communal area being aggressive near others. How would you manage this situation?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:52px;"></div></td>
         <td class="score-col"></td>
     </tr>
 </table>
@@ -563,9 +563,10 @@
 {{-- PAGE 7: MANDATORY QUESTIONS --}}
 <div class="header">
     <div class="header-left">
-        <strong>358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA</strong><br>
-        <strong>T:</strong> 01698 701199<br>
-        <strong>E:</strong> info@ztl.care <strong>W:</strong> www.ztl.care
+        358 Brandon Street Motherwell<br>
+        North Lanarkshire ML1 1XA<br>
+        T: 01698 701199<br>
+        E: info@ztl.care &nbsp;&nbsp; W: www.ztl.care
     </div>
     <div class="header-right">
         @if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif
@@ -573,51 +574,55 @@
 </div>
 
 <table>
-    <tr><td class="section-header" colspan="2">C. Mandatory Questions:</td><td class="section-header" style="width:35%;">Answers:</td></tr>
+    <tr class="section-header">
+        <th style="width:6%;">No.</th>
+        <th style="width:40%;">Mandatory questions</th>
+        <th style="width:54%;">Answers</th>
+    </tr>
     <tr>
-        <td style="width:5%;">1.</td>
-        <td style="width:60%;">Are you prepared to travel within this role?</td>
-        <td></td>
+        <td>1.</td>
+        <td class="question-col">Are you prepared to travel within this role?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:26px;"></div></td>
     </tr>
     <tr>
         <td>2.</td>
-        <td>Are you prepared to support individuals in all needs required?</td>
-        <td></td>
+        <td class="question-col">Are you prepared to support individuals in all needs required?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:26px;"></div></td>
     </tr>
     <tr>
         <td>3.</td>
-        <td>Does the candidate have any Holidays/Annual Leave planned for the next 12 months?</td>
-        <td></td>
+        <td>Does the candidate have any holidays or annual leave planned for the next 12 months?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:26px;"></div></td>
     </tr>
     <tr>
         <td>4.</td>
-        <td>Advise candidate of hourly rate & any enhancements</td>
-        <td></td>
+        <td>Advise candidate of hourly rate and any enhancements.</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:26px;"></div></td>
     </tr>
     <tr>
         <td>5.</td>
-        <td>Discuss any cautions/ convictions/reprimands declared on application & details that would appear on your Disclosure Scotland.</td>
-        <td></td>
+        <td>Discuss any cautions, convictions or reprimands declared on application and any details that would appear on Disclosure Scotland.</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:26px;"></div></td>
     </tr>
     <tr>
         <td>6.</td>
         <td>Have you explained the 0-hr contract?</td>
-        <td></td>
+        <td class="answer-col"><div class="answer-box" style="min-height:26px;"></div></td>
     </tr>
     <tr>
         <td>7.</td>
-        <td>What is your notice period to current Job?</td>
-        <td></td>
+        <td>What is your notice period to your current job?</td>
+        <td class="answer-col"><div class="answer-box" style="min-height:26px;"></div></td>
     </tr>
     <tr>
         <td>8.</td>
         <td>Do you have any questions that you may want to ask?</td>
-        <td></td>
+        <td class="answer-col"><div class="answer-box" style="min-height:26px;"></div></td>
     </tr>
     <tr>
         <td>9.</td>
         <td>Uniform Size</td>
-        <td></td>
+        <td class="answer-col"><div class="answer-box" style="min-height:26px;"></div></td>
     </tr>
 </table>
 
