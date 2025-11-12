@@ -182,11 +182,11 @@ class InterviewController extends Controller
 
         $responses = $interview->responses->keyBy('question_id');
 
-        $pdf = Pdf::loadView('interviews.pdf', [
+        $pdf = Pdf::loadView('interviews.pdf-questionnaire', [
             'interview' => $interview,
             'sections' => $sections,
             'responses' => $responses,
-        ]);
+        ])->setPaper('a4', 'landscape');
 
         $filename = 'interview-' . $interview->candidate_name . '-' . $interview->id . '.pdf';
         $filename = preg_replace('/[^A-Za-z0-9\-_.]/', '-', $filename);
