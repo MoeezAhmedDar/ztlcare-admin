@@ -44,41 +44,24 @@ class RejectionController extends Controller
     }
 
     public function downloadref()
-{
-    // Optional: Pass data to the blade
-    // $data = [
-    //     'surname' => 'Smith',
-    //     'forename' => 'John',
-    //     'position' => 'Care Assistant',
-    //     // ... add all fields
-    // ];
+    {
+        $data = [
+            'surname' => 'Smith',
+            'forename' => 'John',
+            'position' => 'Care Assistant',
+            // ... add all fields
+        ];
 
-    // $pdf = Pdf::loadView('pdf.reference-request', $data)
-    //           ->setPaper('A4')
-    //           ->setOptions([
-    //               'defaultFont'          => 'Calibri',
-    //               'isHtml5ParserEnabled' => true,
-    //               'isRemoteEnabled'      => true,
-    //               'fontDir'              => storage_path('fonts'),
-    //               'fontCache'            => storage_path('fonts'),
-    //           ]);
+        $pdf = Pdf::loadView('pdf.reference-request', $data)
+                  ->setPaper('A4')
+                  ->setOptions([
+                      'defaultFont'          => 'Calibri',
+                      'isHtml5ParserEnabled' => true,
+                      'isRemoteEnabled'      => true,
+                      'fontDir'              => storage_path('fonts'),
+                      'fontCache'            => storage_path('fonts'),
+                  ]);
 
-    // return $pdf->download('Reference-Request-Form.pdf');
-
-
-   $data = [
-        'surname' => 'Smith',
-        'forename' => 'John',
-        'position' => 'Care Assistant',
-        'home_address' => "12 High Street\nGlasgow\nG1 1AA",
-        // ... all fields
-    ];
-
-    $pdf = new PdfFormGenerator();
-    $content = $pdf->generateReferenceRequest($data);
-
-    return response($content)
-        ->header('Content-Type', 'application/pdf')
-        ->header('Content-Disposition', 'attachment; filename="Reference-Request-EDITABLE.pdf"');
-}
+        return $pdf->download('Reference-Request-Form.pdf');
+    }
 }

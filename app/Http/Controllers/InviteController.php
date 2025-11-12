@@ -36,21 +36,21 @@ class InviteController extends Controller
     // 3. Download PDF
     public function download($id)
     {
-        // $letter = InviteLetter::findOrFail($id);
+        $letter = InviteLetter::findOrFail($id);
 
-        // // In InviteController.php → download() method
-        // $pdf = Pdf::loadView('pdf.invite-letter', $letter->toArray())
-        //   ->setPaper('A4')
-        //   ->setOptions([
-        //       'defaultFont'     => 'calibri',
-        //       'isRemoteEnabled' => true,
-        //       'fontDir'         => storage_path('fonts'),
-        //       'fontCache'       => storage_path('fonts'),
-        //   ]);
+        // In InviteController.php → download() method
+        $pdf = Pdf::loadView('pdf.invite-letter', $letter->toArray())
+          ->setPaper('A4')
+          ->setOptions([
+              'defaultFont'     => 'calibri',
+              'isRemoteEnabled' => true,
+              'fontDir'         => storage_path('fonts'),
+              'fontCache'       => storage_path('fonts'),
+          ]);
 
-        // return $pdf->download('Invite-'.$letter->to_name.'.pdf');
+        return $pdf->download('Invite-'.$letter->to_name.'.pdf');
 
-        // return view ('pdf/invite-letter',$letter);
+        return view ('pdf/invite-letter',$letter);
 
     //     $data = [
     //     'date' => '15 November 2025',

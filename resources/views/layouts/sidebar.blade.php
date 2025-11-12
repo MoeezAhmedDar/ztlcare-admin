@@ -71,6 +71,13 @@
         </a>
     </li>
 
+    <li class="nav-item {{ request()->routeIs('reference.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('reference.index')}}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Reference Request</span>
+        </a>
+    </li>
+
     <hr class="sidebar-divider">
     <div class="sidebar-heading">Configuration</div>
 

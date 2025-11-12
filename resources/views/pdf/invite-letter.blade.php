@@ -74,14 +74,14 @@
 <div class="c b up" style="font-size:12.8pt;margin:5px 0 7px;">INTERVIEW INVITATION</div>
 
 <!-- LEFT-ALIGNED BLOCK -->
-<div class="b addr" style="text-align:left;">
-    ZTL CARE<br>358<br>Brandon<br>Street<br>Motherwell<br>ML1 1XA
+<div class="addr" style="text-align:left;">
+    358 Brandon<br>Street<br>Motherwell<br>ML1 1XA
 </div>
-<div class="b phone" style="text-align:left; margin-top:3px;">01698701199</div>
+<div class="phone" style="text-align:left; margin-top:3px;">01698701199</div>
 
-<p>Date: <b>{{ $date ?? '_____________________' }}</b></p>
-<p>To: <b>{{ $to_name ?? '_____________________' }}</b></p>
-<p>Dear <b>{{ $dear ?? '___________________' }}</b>,</p>
+<p>Date: {{ $date ?? '_____________________' }}</p>
+<p>To: {{ $to_name ?? '_____________________' }}</p>
+<p>Dear {{ $dear ?? '___________________' }},</p>
 
 <div class="letter">
     <p>Thank you for applying for the post of <span class="s">{{ $position ?? '_________' }}</span> at ZTL CARE.</p>
