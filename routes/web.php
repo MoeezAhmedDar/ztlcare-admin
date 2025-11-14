@@ -9,6 +9,7 @@ use App\Http\Controllers\OfferController;
 use App\Http\Controllers\RejectionController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\ReferenceRequestController;
+use App\Http\Controllers\UserController;
 
 // ROOT ROUTE - SMART REDIRECT
 Route::get('/', function () {
@@ -142,4 +143,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/hr/reference', [ReferenceRequestController::class, 'index'])->name('reference.index');
     Route::post('/hr/reference', [ReferenceRequestController::class, 'store'])->name('reference.store');
     Route::get('/hr/reference/{id}/download', [ReferenceRequestController::class, 'download'])->name('reference.download');
+
+    Route::middleware(['auth'])->group(function () {
+        Route::resource('users', UserController::class);
+    });
 });

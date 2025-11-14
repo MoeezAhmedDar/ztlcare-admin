@@ -435,7 +435,7 @@ class JobApplicationController extends Controller
             'referrals',
         ]);
 
-        $pdf = Pdf::loadView('admin.job-applications.pdf', [
+        $pdf = Pdf::loadView('admin.job-applications.pdf-complete', [
             'jobApplication' => $jobApplication,
         ]);
 

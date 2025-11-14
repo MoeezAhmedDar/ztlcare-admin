@@ -89,6 +89,13 @@
         </a>
     </li>
 
+    <li class="nav-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('users.index') }}">
+            <i class="fas fa-fw fa-question-circle"></i>
+            <span>Users</span>
+        </a>
+    </li>
+
     <hr class="sidebar-divider d-none d-md-block">
     
     <!-- Sidebar Toggler -->
