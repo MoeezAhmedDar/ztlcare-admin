@@ -1,22 +1,43 @@
 @extends('layouts.public')
-
 @section('title', 'Job Application - Personal Details')
 
 @section('content')
-<div class="form-container">
-    <div class="form-header">
-        <h1>Job Application Form</h1>
-        <p>ZAN Traders Ltd - ZTL Care</p>
-    </div>
 
+
+<div class="form-container">
+   @include('layouts.form-header')
     @include('job-application.partials.progress', ['currentStep' => 1])
 
     <div class="form-body">
+        <!-- NEW: Profile Photo Upload - Placed at the very top -->
+
         <h2 class="form-section-title">Personal Details</h2>
 
-        <form action="{{ route('job-application.store-step', 1) }}" method="POST">
-            @csrf
+            <form action="{{ route('job-application.store-step', 1) }}" method="POST" enctype="multipart/form-data">
+                @csrf
 
+                <div class="text-center mb-4">
+                <h3 class="h5 mb-3 text-primary">Profile Photo</h3>
+                <div class="form-group">
+                    <label for="profile_photo">Upload Your Profile Photo (optional)</label>
+                    <input type="file" name="profile_photo" id="profile_photo" class="form-control-file mx-auto d-block" accept="image/*" style="max-width: 300px;">
+                    <small class="form-text text-muted">Accepted formats: JPG, JPEG, PNG, GIF. Maximum size: 2MB.</small>
+                    @error('profile_photo')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <!-- Optional: Show preview if previously uploaded (after validation error) -->
+                @if (isset($formData['step_1']['profile_photo']) && $formData['step_1']['profile_photo'])
+                    <div class="mt-3">
+                        <img src="{{ Storage::url($formData['step_1']['profile_photo']) }}" 
+                            alt="Profile Preview" 
+                            class="img-thumbnail mx-auto d-block" 
+                            style="max-width: 180px; max-height: 180px; object-fit: cover;">
+                        <p class="small text-muted mt-1">Previously uploaded photo</p>
+                    </div>
+                @endif
+            </div>
             <div class="form-row">
                 <div class="form-group col-md-2">
                     <label for="title">Title</label>
@@ -31,8 +52,8 @@
                     @error('title')<div class="text-danger small">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group col-md-4">
-                    <label for="date_of_birth">Date of Birth</label>
-                    <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" value="{{ old('date_of_birth', $formData['step_1']['date_of_birth'] ?? '') }}">
+                    <label for="date_of_birth">Date of Birth <span class="text-danger">*</span></label>
+                    <input type="date" required name="date_of_birth" id="date_of_birth" class="form-control" value="{{ old('date_of_birth', $formData['step_1']['date_of_birth'] ?? '') }}">
                     @error('date_of_birth')<div class="text-danger small">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group col-md-3">
@@ -78,8 +99,8 @@
                     @error('previous_name')<div class="text-danger small">{{ $message }}</div>@enderror
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="ni_number">NI Number</label>
-                    <input type="text" name="ni_number" id="ni_number" class="form-control" placeholder="AB123456C" value="{{ old('ni_number', $formData['step_1']['ni_number'] ?? '') }}">
+                    <label for="ni_number">NI Number <span class="text-danger">*</span></label>
+                    <input type="text" required name="ni_number" id="ni_number" class="form-control" placeholder="AB123456C" value="{{ old('ni_number', $formData['step_1']['ni_number'] ?? '') }}">
                     @error('ni_number')<div class="text-danger small">{{ $message }}</div>@enderror
                 </div>
             </div>
@@ -87,15 +108,15 @@
             <h3 class="h5 mt-4 mb-3 text-primary">Address</h3>
             
             <div class="form-group">
-                <label for="address">Address</label>
-                <textarea name="address" id="address" class="form-control" rows="3">{{ old('address', $formData['step_1']['address'] ?? '') }}</textarea>
+                <label for="address">Address <span class="text-danger">*</span></label>
+                <textarea name="address" required id="address" class="form-control" rows="3">{{ old('address', $formData['step_1']['address'] ?? '') }}</textarea>
                 @error('address')<div class="text-danger small">{{ $message }}</div>@enderror
             </div>
 
             <div class="form-row">
                 <div class="form-group col-md-4">
-                    <label for="postcode">Postcode</label>
-                    <input type="text" name="postcode" id="postcode" class="form-control" value="{{ old('postcode', $formData['step_1']['postcode'] ?? '') }}">
+                    <label for="postcode">Postcode <span class="text-danger">*</span></label>
+                    <input type="text" required name="postcode" id="postcode" class="form-control" value="{{ old('postcode', $formData['step_1']['postcode'] ?? '') }}">
                     @error('postcode')<div class="text-danger small">{{ $message }}</div>@enderror
                 </div>
             </div>

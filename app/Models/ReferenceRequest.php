@@ -11,6 +11,15 @@ class ReferenceRequest extends Model
         'job_title', 'capacity', 'reason_leaving', 'gross_salary', 'duties', 'ability_role',
         'time_management', 'reliability', 'disciplinary', 'reemploy', 'criminal', 'other_info',
         'ref_position', 'ref_date', 'ref_signed', 'ref_name', 'ref_company',
-        'office_verified', 'office_signed', 'office_name', 'office_position', 'office_date', 'office_comments'
+        'office_verified', 'office_signed', 'office_name', 'office_position', 'office_date', 'office_comments','font_size','to_user_id'
     ];
+
+    protected $casts = [
+        'font_size' => 'decimal:2',
+    ];
+
+      public function applicant()
+    {
+        return $this->belongsTo(User::class, 'to_user_id');
+    }
 }

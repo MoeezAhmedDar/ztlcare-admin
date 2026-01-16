@@ -458,32 +458,6 @@
 </ul>
 </div>
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
-<div class="page-break"></div>
-
-{{-- PAGE 11: THANK YOU & REFERRALS --}}
-<div class="header">
-    <div class="header-left">358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA<br>T: 01698 701199<br>E: info@ztl.care&nbsp;&nbsp;W: www.ztl.care</div>
-    <div class="header-right">@if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif</div>
-</div>
-<h2>THANK YOU FOR COMPLETING THE REGISTRATION FORM</h2>
-<ul>
-    <li>✓ Book an appointment to register in the office, if you bring all your documents, we will pay your travel</li>
-    <li>✓ Get yourself compliant within two weeks and we will give you a FREE uniform</li>
-    <li>✓ We run a weekly payroll service.</li>
-    <li>✓ Do you know if you refer your friends, we will pay you £50 per person? Many of our candidates are earning</li>
-    <li>✓ 100's through referrals every month, why not start today?"</li>
-</ul>
-<table>
-    <tr><td class="label" style="width:25%;">Referral 1<br>Name:</td><td style="width:25%;">{{ $jobApplication->referrals[0]->name ?? '' }}</td><td class="label" style="width:25%;">Telephone Number:</td><td>{{ $jobApplication->referrals[0]->telephone ?? '' }}</td></tr>
-    <tr><td class="label">Referral 2<br>Name:</td><td>{{ $jobApplication->referrals[1]->name ?? '' }}</td><td class="label">Telephone Number:</td><td>{{ $jobApplication->referrals[1]->telephone ?? '' }}</td></tr>
-    <tr><td class="label">Referral 3<br>Name:</td><td>{{ $jobApplication->referrals[2]->name ?? '' }}</td><td class="label">Telephone Number:</td><td>{{ $jobApplication->referrals[2]->telephone ?? '' }}</td></tr>
-    <tr><td class="label">Referral 4<br>Name:</td><td>{{ $jobApplication->referrals[3]->name ?? '' }}</td><td class="label">Telephone Number:</td><td>{{ $jobApplication->referrals[3]->telephone ?? '' }}</td></tr>
-    <tr><td class="label">Referral 5<br>Name:</td><td>{{ $jobApplication->referrals[4]->name ?? '' }}</td><td class="label">Telephone Number:</td><td>{{ $jobApplication->referrals[4]->telephone ?? '' }}</td></tr>
-</table>
-<p style="font-size:8px; margin-top:8px;">You must be fully compliant within two weeks of receiving your registration pack to receive a free uniform. We will pay you £50 for every worker you refer; they must complete 100 hours to receive payment and must be new referrals that are not already held in our data base.</p>
-<p style="font-size:9px; margin-top:8px;"><strong>Please email your completed registration pack to:</strong></p>
-<p style="font-size:10px; text-align:center; margin-top:4px;"><strong>info@ztl.care</strong></p>
-<div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
 
 </body>
 </html>

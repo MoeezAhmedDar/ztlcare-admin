@@ -13,11 +13,33 @@
             <form action="{{ route('reference.store') }}" method="POST">
                 @csrf
                 <div class="row g-3">
-                    <div class="col-md-4"><label>Surname</label><input type="text" name="surname" class="form-control" required></div>
-                    <div class="col-md-4"><label>Forename</label><input type="text" name="forename" class="form-control" required></div>
+                    <div class="col-md-4">
+                        <label for="to_user_id">Dear (Candidate Name)</label>
+                        <br>
+                        <select name="to_user_id" id="to_user_id" class="form-select @error('to_user_id') is-invalid @enderror" required>
+                            <option value="" disabled {{ old('to_user_id') ? '' : 'selected' }}>Select Applicant</option>
+                            @foreach($applicants as $applicant)
+                                <option value="{{ $applicant->id }}" {{ old('to_user_id') == $applicant->id ? 'selected' : '' }}>
+                                    {{ $applicant->full_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('to_user_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <div class="col-md-4"><label>Position</label><input type="text" name="position" class="form-control" required></div>
                     <div class="col-12"><label>Home Address</label><textarea name="home_address" class="form-control" rows="2"></textarea></div>
                     <!-- Add more fields as needed -->
+                    <div class="col-md-4">
+                        <label for="font_size" class="form-label"><strong>Font Size</strong></label>
+                        <br>
+                        <select name="font_size" id="font_size" class="form-select" required>
+                            <option value="10.00" {{ old('font_size', $letter->font_size ?? 10.00) == 10.00 ? 'selected' : '' }}>10 pt (Standard)</option>
+                            <option value="11.00" {{ old('font_size', $letter->font_size ?? 10.00) == 11.00 ? 'selected' : '' }}>11 pt</option>
+                            <option value="12.00" {{ old('font_size', $letter->font_size ?? 10.00) == 12.00 ? 'selected' : '' }}>12 pt (Large)</option>
+                        </select>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary mt-4 px-5">Save & Download PDF</button>
             </form>

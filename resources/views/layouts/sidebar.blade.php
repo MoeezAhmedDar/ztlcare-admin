@@ -20,26 +20,10 @@
     <hr class="sidebar-divider">
     <div class="sidebar-heading">Management</div>
 
-    <!-- Interviews -->
-    <li class="nav-item {{ request()->routeIs('interviews.*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('interviews.index') }}">
-            <i class="fas fa-fw fa-clipboard-list"></i>
-            <span>Interviews</span>
-        </a>
-    </li>
-
-    <!-- Job Applications -->
     <li class="nav-item {{ request()->routeIs('admin.job-applications.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.job-applications.index') }}">
             <i class="fas fa-fw fa-file-alt"></i>
             <span>Job Applications</span>
-        </a>
-    </li>
-
-    <li class="nav-item {{ request()->routeIs('documents.index') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('documents.index')}}">
-            <i class="fas fa-fw fa-file-alt"></i>
-            <span>Hr Documents</span>
         </a>
     </li>
 
@@ -49,6 +33,16 @@
             <span>Invite Letter</span>
         </a>
     </li>
+
+    <!-- Interviews -->
+    <li class="nav-item {{ request()->routeIs('interviews.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('interviews.index') }}">
+            <i class="fas fa-fw fa-clipboard-list"></i>
+            <span>Interviews</span>
+        </a>
+    </li>
+
+    <!-- Job Applications -->
 
     <li class="nav-item {{ request()->routeIs('offer.portal') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('offer.portal')}}">
@@ -77,6 +71,20 @@
             <span>Reference Request</span>
         </a>
     </li>
+
+    <li class="nav-item {{ request()->routeIs('custom_letters.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('custom_letters.index')}}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Custom Letter</span>
+        </a>
+    </li>
+
+    <!-- <li class="nav-item {{ request()->routeIs('documents.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('documents.index')}}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Hr Documents</span>
+        </a>
+    </li> -->
 
     <hr class="sidebar-divider">
     <div class="sidebar-heading">Configuration</div>

@@ -10,13 +10,18 @@ use App\Http\Controllers\RejectionController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\ReferenceRequestController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CustomLetterController;
+use App\Http\Controllers\Auth\RegisterController;
 
 // ROOT ROUTE - SMART REDIRECT
 Route::get('/', function () {
-    if (Auth::check()) {
-        return redirect()->route('dashboard');
+    if (Auth::check() && Auth::user()->hasRole('admin')) {
+        return Redirect::route('dashboard');
+    }elseif(Auth::check() && Auth::user()->hasRole('applicant')){
+        return redirect()->intended('/apply');
     }
-    return redirect()->route('login');
+
+    return Redirect::route('login');
 })->name('home');
 
 // Dashboard (Logged in only)
@@ -31,7 +36,7 @@ Route::get('/dashboard', function () {
     $recentInterviews = \App\Models\Interview::latest()->limit(5)->get();
     
     return view('dashboard', compact('interviewStats', 'recentInterviews'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified','role:admin'])->name('dashboard');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -40,22 +45,39 @@ Route::middleware('guest')->group(function () {
     })->name('login');
 
     Route::post('/login', function (Request $request) {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        $credentials = $request->only('email', 'password');
-        
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
+    $credentials = $request->only('email', 'password');
+    $remember = $request->boolean('remember');
+
+    if (Auth::attempt($credentials, $remember)) {
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        // Redirect based on role
+        if ($user->hasRole('admin')) {
             return redirect()->intended('/dashboard');
         }
+
+        if ($user->hasRole('applicant')) {
+            return redirect()->intended('/apply'); // or route('apply')
+        }
+
+        // Optional: fallback for other roles or if role is missing
+        return redirect()->intended('/dashboard');
+    }
 
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     });
+
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
 });
 
 Route::post('/logout', function (Request $request) {
@@ -119,6 +141,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/documents', [App\Http\Controllers\DocumentController::class, 'index'])->name('documents.index');
 
+    // routes/web.php
+    Route::get('/download-document/{file}', function ($file) {
+        $filePath = storage_path('app/public/documents/' . $file);
+        
+        if (!file_exists($filePath)) {
+            abort(404, 'File not found');
+        }
+
+        return response()->download($filePath, $file);
+    })->name('download.document');
+
    // Route::get('/invite-letter/pdf', [App\Http\Controllers\DocumentController::class, 'generate'])->name('invite-letter.pdf');
 
    // routes/web.php
@@ -143,8 +176,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/hr/reference', [ReferenceRequestController::class, 'index'])->name('reference.index');
     Route::post('/hr/reference', [ReferenceRequestController::class, 'store'])->name('reference.store');
     Route::get('/hr/reference/{id}/download', [ReferenceRequestController::class, 'download'])->name('reference.download');
+    Route::resource('users', UserController::class);
 
-    Route::middleware(['auth'])->group(function () {
-        Route::resource('users', UserController::class);
-    });
+    Route::get('/custom-letters', [CustomLetterController::class, 'index'])
+        ->name('custom_letters.index');
+
+    Route::post('/custom-letters', [CustomLetterController::class, 'store'])
+        ->name('custom_letters.store');
+
+    Route::get('/custom-letters/{id}/download', [CustomLetterController::class, 'download'])
+        ->name('custom_letters.download');
+    
 });

@@ -24,7 +24,16 @@ class JobApplication extends Model
         'has_convictions', 'convictions_details', 'has_disciplinary', 'disciplinary_details', 
         'has_criminal_charges', 'criminal_charges_details', 'consents_police_check', 
         'police_checked_recently', 'police_check_details',
-        'status', 'admin_notes'
+        'status', 'admin_notes','current_job_title',
+        'current_pay_amount',       
+        'current_pay_frequency',
+        'current_from_date',       
+        'current_to_date',
+        'profile_photo',
+        'registration_certificate_path',
+        'character_reference_certificate',
+        'right_to_work_share_code',
+        'right_to_work_proof_path',
     ];
 
     protected $casts = [

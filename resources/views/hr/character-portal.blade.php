@@ -15,9 +15,43 @@
                 <div class="row g-3">
                     <div class="col-md-4"><label>Date</label><input type="date" name="date" class="form-control" value="{{ now()->format('d F Y') }}" required></div>
                     <div class="col-md-4"><label>Dear (Referee)</label><input type="text" name="dear" class="form-control" required></div>
-                    <div class="col-md-4"><label>Candidate Name</label><input type="text" name="candidate_name" class="form-control" required></div>
+                    <div class="col-md-4">
+                        <label for="to_user_id">Candidate Name</label>
+                        <br>
+                        <select name="to_user_id" id="to_user_id" class="form-select @error('to_user_id') is-invalid @enderror" required>
+                            <option value="" disabled {{ old('to_user_id') ? '' : 'selected' }}>Select Applicant</option>
+                            @foreach($applicants as $applicant)
+                                <option value="{{ $applicant->id }}" {{ old('to_user_id') == $applicant->id ? 'selected' : '' }}>
+                                    {{ $applicant->full_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('to_user_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <div class="col-md-4"><label>Position</label><input type="text" name="position" class="form-control" required></div>
+                    <div class="col-md-4">
+                        <label for="font_size" class="form-label"><strong>Font Size</strong></label>
+                        <br>
+                        <select name="font_size" id="font_size" class="form-select" required>
+                            <option value="10.00" {{ old('font_size', $letter->font_size ?? 10.00) == 10.00 ? 'selected' : '' }}>10 pt (Standard)</option>
+                            <option value="11.00" {{ old('font_size', $letter->font_size ?? 10.00) == 11.00 ? 'selected' : '' }}>11 pt</option>
+                            <option value="12.00" {{ old('font_size', $letter->font_size ?? 10.00) == 12.00 ? 'selected' : '' }}>12 pt (Large)</option>
+                        </select>
+                    </div>
                 </div>
+                <div class="mb-4">
+    <label for="custom_body" class="form-label">
+        <strong>Custom Body Text (Optional)</strong>
+    </label>
+    <p class="text-muted small mb-2">
+        If filled, this will replace the standard paragraph block after "Re: Reference Request for ...".<br>
+        Leave empty to use the default text.
+    </p>
+    <textarea name="custom_body" id="custom_body" rows="12" class="form-control"
+              placeholder="You can write completely custom content here...">{{ old('custom_body', $letter->custom_body ?? '') }}</textarea>
+</div>
                 <button type="submit" class="btn btn-primary mt-4 px-5">Save & Download PDF</button>
             </form>
         </div>

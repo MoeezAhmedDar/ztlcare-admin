@@ -5,66 +5,65 @@ use App\Models\InviteLetter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Services\PdfFormGenerator;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class InviteController extends Controller
-{
-    // 1. Show portal
+{   
     public function index()
     {
         $letters = InviteLetter::latest()->get();
-        return view('hr/invite-portal', compact('letters'));
+
+        $applicants = User::whereHas('roles', function ($query) {
+            $query->where('name', 'applicant');
+        })
+        ->orderBy('last_name')    // Primary sort: last name A-Z
+        ->orderBy('first_name')   // Secondary sort: first name A-Z
+        ->get(); 
+
+        return view('hr.invite-portal', compact('letters', 'applicants'));
     }
 
-    // 2. Save to DB
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $data = $request->validate([
-            'date' => 'required',
-            'to_name' => 'required',
-            'dear' => 'required',
-            'position' => 'required',
-            'time' => 'required',
-            'interview_date' => 'required',
+            'date'             => 'required|date',
+            'to_user_id'       => 'required|exists:users,id', // must be a valid user ID
+            'position'         => 'required|string|max:255',
+            'time'             => 'required|date_format:H:i', // better validation for time
+            'interview_date'   => 'required|date',
+            'custom_documents' => 'nullable|string',
+            'font_size'        => 'required|numeric|in:10.00,11.00,12.00',
         ]);
 
-        $letter = InviteLetter::create($data);
+        // Fetch the selected user to get their name (for PDF/display)
+        $applicant = User::findOrFail($data['to_user_id']);
+
+        // Create the letter with user ID and computed name
+        $letter = InviteLetter::create([
+            'date'             => $data['date'],
+            'to_user_id'       => $data['to_user_id'],
+            'to_name'          => $applicant->full_name, // still store name for PDF/display
+            'dear'             => 'Dear ' . $applicant->first_name, // e.g., "Dear John"
+            'position'         => $data['position'],
+            'time'             => $data['time'],
+            'interview_date'   => $data['interview_date'],
+            'custom_documents' => $data['custom_documents'],
+            'font_size'        => $data['font_size'],
+        ]);
 
         return redirect()->route('invite.download', $letter->id)
-                         ->with('success', 'Saved! Downloading...');
+            ->with('success', 'Interview invite created & downloading...');
     }
 
-    // 3. Download PDF
-    public function download($id)
-    {
+    public function download($id){
         $letter = InviteLetter::findOrFail($id);
-
-        // In InviteController.php → download() method
-        $pdf = Pdf::loadView('pdf.invite-letter', $letter->toArray())
-          ->setPaper('A4')
-          ->setOptions([
-              'defaultFont'     => 'calibri',
-              'isRemoteEnabled' => true,
-              'fontDir'         => storage_path('fonts'),
-              'fontCache'       => storage_path('fonts'),
-          ]);
-
-        return $pdf->download('Invite-'.$letter->to_name.'.pdf');
-
-        return view ('pdf/invite-letter',$letter);
-
-    //     $data = [
-    //     'date' => '15 November 2025',
-    //     'to' => 'Mr John Smith',
-    //     'dear' => 'John',
-    //     'position' => 'Care Assistant',
-    //     'time' => '10:00 AM',
-    // ];
-
-    // $generator = new PdfFormGenerator();
-    // $pdfContent = $generator->generateInterviewInvite($data);
-
-    // return response($pdfContent)
-    //     ->header('Content-Type', 'application/pdf')
-    //     ->header('Content-Disposition', 'attachment; filename="Interview-Invite-EDITABLE.pdf"');
+        
+        $logoPath = public_path('images/logo.png'); 
+        $logoBase64 = file_exists($logoPath) 
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) 
+            : null;
+        $pdf = PDF::loadView('pdf.invite-letter', compact('letter'));
+         return $pdf->download('Interview-Invite-' . $letter->to_name . '.pdf');
     }
 }

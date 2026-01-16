@@ -26,6 +26,7 @@ class JobApplicationWorkHistory extends Model
     protected $casts = [
         'from_date' => 'date',
         'to_date' => 'date',
+        'display_order' => 'integer',
     ];
 
     public function jobApplication()

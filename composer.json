@@ -13,6 +13,7 @@
         "laravel/ui": "^4.6",
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
+        "spatie/laravel-permission": "^6.24",
         "tecnickcom/tcpdf": "^6.10"
     },
     "require-dev": {

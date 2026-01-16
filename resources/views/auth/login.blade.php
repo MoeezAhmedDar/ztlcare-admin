@@ -40,6 +40,14 @@
                                 <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Sign in</button>
                             </div>
                         </form>
+                        <div class="relative mt-6 text-center">
+                            <p class="text-gray-600 text-sm">
+                                Don't have an account?
+                                <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-500">
+                                    Register
+                                </a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -4,55 +4,92 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     public function index(): View
     {
-        $users = User::latest()->paginate(10);
+        $users = User::with('roles')
+                     ->latest()
+                     ->paginate(10);
+
         return view('users.index', compact('users'));
     }
 
     public function create(): View
     {
-        return view('users.create');
+        $roles = Role::all(); // Get all roles for the select box
+
+        return view('users.create', compact('roles'));
     }
 
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        User::create($request->all());
+        $validated = $request->validated();
+
+        $user = User::create([
+            'first_name'  => $validated['first_name'],
+            'middle_name' => $validated['middle_name'] ?? null,
+            'last_name'   => $validated['last_name'],
+            'email'       => $validated['email'],
+            'password'    => Hash::make($validated['password']),
+            'phone'       => $validated['phone'] ?? null,
+            'postcode'    => $validated['postcode'] ?? null,
+            'dob'         => $validated['dob'] ?? null,
+        ]);
+
+        // Assign the selected role
+        $user->assignRole($validated['role']);
 
         return redirect()
             ->route('users.index')
             ->with('success', 'User created successfully.');
     }
 
-    public function show(User $user): UserResource
+    public function show(User $user): View
     {
-        return new UserResource($user);
+        // If you want a view instead of API resource, change return type to View
+        return view('users.show', compact('user'));
     }
 
     public function edit(User $user): View
     {
-        return view('users.edit', compact('user'));
+        $roles = Role::all();
+        $user->load('roles'); // Load current roles for the form
+
+        return view('users.edit', compact('user', 'roles'));
     }
 
-   public function update(UpdateUserRequest $request, User $user): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $data = $request->validated();
+        $validated = $request->validated();
 
-        // Remove password if not set (safety)
-        if (empty($data['password'])) {
-            unset($data['password']);
-        } else {
-            $data['password'] = bcrypt($data['password']);
+        $updateData = [
+            'first_name'  => $validated['first_name'],
+            'middle_name' => $validated['middle_name'] ?? null,
+            'last_name'   => $validated['last_name'],
+            'email'       => $validated['email'],
+            'phone'       => $validated['phone'] ?? null,
+            'postcode'    => $validated['postcode'] ?? null,
+            'dob'         => $validated['dob'] ?? null,
+        ];
+
+        // Only update password if provided
+        if (!empty($validated['password'])) {
+            $updateData['password'] = Hash::make($validated['password']);
         }
 
-        $user->update($data);
+        $user->update($updateData);
+
+        // Sync role (in case it changed)
+        if ($request->has('role')) {
+            $user->syncRoles($validated['role']);
+        }
 
         return redirect()
             ->route('users.index')

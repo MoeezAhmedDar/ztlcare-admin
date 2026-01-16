@@ -19,6 +19,7 @@ class JobApplicationEducation extends Model
         'qualification',
         'grade',
         'display_order',
+        'certificate_path'
     ];
 
     public function jobApplication()

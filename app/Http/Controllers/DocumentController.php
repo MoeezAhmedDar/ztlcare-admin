@@ -11,11 +11,36 @@ class DocumentController extends Controller
     public function index()
     {
         $documents = [
-            ['name' => 'Character Certificate', 'file' => 'character_certificate.pdf'],
-            ['name' => 'Equal Opportunities Form', 'file' => 'equal_opportunities_form.pdf'],
-            ['name' => 'Invite Letter', 'file' => 'invite_letter.pdf'],
-            ['name' => 'Offer Letter', 'file' => 'offer_letter.pdf'],
-            ['name' => 'Rejection Letter', 'file' => 'rejection_letter.pdf'],
+            [
+                'name' => 'Character Certificate',
+                'pdf'  => 'character_certificate.pdf',
+                'word' => 'character_certificate.docx',
+            ],
+            [
+                'name' => 'Equal Opportunities Form',
+                'pdf'  => 'equal_opportunities_form.pdf',
+                'word' => 'equal_opportunities_form.docx',
+            ],
+            [
+                'name' => 'Reference Request Form',
+                'pdf'  => 'reference_request_form.pdf',
+                'word' => 'reference_request_form.docx',
+            ],
+            [
+                'name' => 'Invite Letter',
+                'pdf'  => 'invite_letter.pdf',
+                'word' => 'invite_letter.docx',
+            ],
+            [
+                'name' => 'Offer Letter',
+                'pdf'  => 'offer_letter.pdf',
+                'word' => 'offer_letter.docx',
+            ],
+            [
+                'name' => 'Rejection Letter',
+                'pdf'  => 'rejection_letter.pdf',
+                'word' => 'rejection_letter.docx',
+            ],
         ];
 
         return view('documents.index', compact('documents'));

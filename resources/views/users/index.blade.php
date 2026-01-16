@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Create Section')
+@section('title', 'Users')
 
 @section('content')
 <div class="container">
@@ -17,18 +17,28 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>Name</th> <!-- Now shows full name -->
                 <th>Email</th>
+                <th>Role(s)</th>
+                <th>Phone</th>
                 <th>Created</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($users as $user)
+            @forelse ($users as $user)
                 <tr>
                     <td>{{ $user->id }}</td>
-                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->full_name }}</td> <!-- Uses the full_name accessor -->
                     <td>{{ $user->email }}</td>
+                    <td>
+                        @if ($user->roles->isNotEmpty())
+                            {{ $user->roles->pluck('name')->implode(', ') }}
+                        @else
+                            <span class="text-muted">No role</span>
+                        @endif
+                    </td>
+                    <td>{{ $user->phone ?? '—' }}</td>
                     <td>{{ $user->created_at->format('d/m/Y') }}</td>
                     <td>
                         <a href="{{ route('users.edit', $user) }}" class="btn btn-sm btn-warning">Edit</a>
@@ -41,7 +51,11 @@
                         </form>
                     </td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="7" class="text-center py-4">No users found.</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 

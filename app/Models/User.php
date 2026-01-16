@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +19,14 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'middle_name',
+        'last_name',
         'email',
         'password',
+        'phone',
+        'postcode',
+        'dob',
     ];
 
     /**
@@ -43,6 +49,23 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'dob' => 'date', // Optional: cast to Carbon date
         ];
+    }
+
+    /**
+     * Get the user's full name (accessor).
+     *
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        $parts = [$this->first_name];
+        if ($this->middle_name) {
+            $parts[] = $this->middle_name;
+        }
+        $parts[] = $this->last_name;
+
+        return trim(implode(' ', $parts));
     }
 }
