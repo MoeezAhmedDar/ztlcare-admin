@@ -34,6 +34,19 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+
+    protected static function booted()
+    {
+        static::deleting(function (User $user) {
+            $user->roles()->detach();
+            $user->permissions()->detach();
+            
+            // Optional: also revoke tokens if using Sanctum/Passport
+            // $user->tokens()->delete();
+        });
+    }
+
+
     protected $hidden = [
         'password',
         'remember_token',

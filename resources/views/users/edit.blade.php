@@ -103,7 +103,8 @@
             <select name="role" id="role" class="form-select @error('role') is-invalid @enderror" required>
                 <option value="" disabled>Select a role</option>
                 @foreach($roles as $role)
-                    <option value="{{ $role->name }}" {{ old('role', $user->roles->first()->name ?? '') == $role->name ? 'selected' : '' }}>
+                    <option value="{{ $role->name }}"
+                            {{ old('role', $user->roles->pluck('name')->first() ?? '') == $role->name ? 'selected' : '' }}>
                         {{ ucfirst($role->name) }}
                     </option>
                 @endforeach
@@ -113,10 +114,64 @@
             @enderror
         </div>
 
+        <!-- Direct Permissions – Shows only when "admin" is selected -->
+        <div id="permissions-section" class="mb-4" style="display: none;">
+            <label class="form-label">Direct Permissions (for Admin role only)</label>
+            <div class="border rounded p-3 bg-light" style="max-height: 220px; overflow-y: auto;">
+                @foreach($permissions as $permission)
+                    <div class="form-check">
+                        <input 
+                            type="checkbox" 
+                            name="permissions[]" 
+                            value="{{ $permission->name }}" 
+                            class="form-check-input" 
+                            id="perm_edit_{{ $loop->index }}"
+                            {{ in_array($permission->name, old('permissions', $user->getDirectPermissions()->pluck('name')->toArray())) ? 'checked' : '' }}
+                        >
+                        <label class="form-check-label" for="perm_edit_{{ $loop->index }}">
+                            {{ ucfirst(str_replace([' ', '_'], ' → ', $permission->name)) }}
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+            <div class="form-text text-muted mt-2">
+                Select or deselect permissions to assign directly to this admin user.<br>
+                These are in addition to the permissions from the admin role.
+            </div>
+            @error('permissions.*')
+                <div class="text-danger small">{{ $message }}</div>
+            @enderror
+        </div>
+
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-success">Update User</button>
             <a href="{{ route('users.index') }}" class="btn btn-secondary">Back to List</a>
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const roleSelect = document.getElementById('role');
+    const permissionsSection = document.getElementById('permissions-section');
+
+    function togglePermissions() {
+        if (roleSelect.value === 'admin') {
+            permissionsSection.style.display = 'block';
+        } else {
+            permissionsSection.style.display = 'none';
+            // Clear all checkboxes when switching away from admin
+            permissionsSection.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+        }
+    }
+
+    // Run on page load (important for pre-selected role)
+    togglePermissions();
+
+    // Run when role changes
+    roleSelect.addEventListener('change', togglePermissions);
+});
+</script>
 @endsection

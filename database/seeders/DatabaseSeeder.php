@@ -33,6 +33,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             CareAssistantQuestionnaireSeeder::class,
+            RoleSeeder::class,
+            PermissionSeeder::class
+            
         ]);
     }
 }

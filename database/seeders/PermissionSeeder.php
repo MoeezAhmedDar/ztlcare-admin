@@ -2,42 +2,49 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-// database/seeders/PermissionSeeder.php (or inside RoleSeeder::run())
-
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use App\Models\User;
 
 class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create permissions (firstOrCreate avoids duplicates)
+        // Reset cached roles and permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
+        // Define all your permissions based on sidebar menu items
         $permissions = [
-            'view.dashboard',
-            'view.job-applications',
-            'view.invite-letter',
-            'view.interviews',
-            'view.offer-letter',
-            'view.rejection-letter',
-            'view.character-certificate',
-            'view.reference-request',
-            'view.custom-letters',
-            'manage.questionnaire',
-            'manage.users',
+            // Management
+            'view job applications',
+            'view invite letters',
+            'view interviews',
+            'view offer letters',
+            'view rejection letters',
+            'view character certificates',
+            'view reference requests',
+            'view custom letters',
+
+            // Configuration
+            'manage questionnaire',
+            'manage users',
         ];
 
-        foreach ($permissions as $perm) {
-            Permission::firstOrCreate(['name' => $perm]);
+        // Create permissions
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // Get or create admin role
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        // Get the specific user by email
+        $user = User::where('email', 'moeezahmed448@gmail.com')->first();
 
-        // Give ALL permissions to admin role
-        $adminRole->syncPermissions($permissions);
+        if ($user) {
+            // Assign ALL permissions directly to this user
+            $user->givePermissionTo(Permission::all());
 
-        $this->command->info('Permissions created and assigned to admin role!');
+            $this->command->info('All permissions assigned directly to user: ' . $user->email);
+        } else {
+            $this->command->warn('User with email moeezahmed448@gmail.com not found. Make sure the user exists.');
+        }
     }
 }

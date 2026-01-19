@@ -108,10 +108,64 @@
             @enderror
         </div>
 
+        <!-- Direct Permissions – Shows only when "admin" is selected -->
+        <div id="permissions-section" class="mb-4" style="display: none;">
+            <label class="form-label">Direct Permissions (for Admin role only)</label>
+            <div class="border rounded p-3 bg-light" style="max-height: 220px; overflow-y: auto;">
+                @foreach($permissions as $permission)
+                    <div class="form-check">
+                        <input 
+                            type="checkbox" 
+                            name="permissions[]" 
+                            value="{{ $permission->name }}" 
+                            class="form-check-input" 
+                            id="perm_{{ $loop->index }}"
+                            {{ in_array($permission->name, old('permissions', [])) ? 'checked' : '' }}
+                        >
+                        <label class="form-check-label" for="perm_{{ $loop->index }}">
+                            {{ ucfirst(str_replace([' ', '_'], ' → ', $permission->name)) }}
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+            <div class="form-text text-muted mt-2">
+                Select one or more permissions to assign directly to this admin user.<br>
+                These are in addition to the permissions from the admin role.
+            </div>
+            @error('permissions.*')
+                <div class="text-danger small">{{ $message }}</div>
+            @enderror
+        </div>
+
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-success">Create User</button>
             <a href="{{ route('users.index') }}" class="btn btn-secondary">Back to List</a>
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const roleSelect = document.getElementById('role');
+    const permissionsSection = document.getElementById('permissions-section');
+
+    function togglePermissions() {
+        if (roleSelect.value === 'admin') {
+            permissionsSection.style.display = 'block';
+        } else {
+            permissionsSection.style.display = 'none';
+            // Clear all checkboxes when hiding
+            permissionsSection.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = false;
+            });
+        }
+    }
+
+    // Run on page load
+    togglePermissions();
+
+    // Run when role changes
+    roleSelect.addEventListener('change', togglePermissions);
+});
+</script>
 @endsection
