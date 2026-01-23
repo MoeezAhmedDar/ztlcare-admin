@@ -165,11 +165,6 @@
                                        {{ old('account_type', $formData['step_4']['account_type'] ?? '') === 'Personal' ? 'checked' : '' }}>
                                 <label class="custom-control-label" for="account_personal">Personal</label>
                             </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="account_ltd" name="account_type" class="custom-control-input" value="LTD" 
-                                       {{ old('account_type', $formData['step_4']['account_type'] ?? '') === 'LTD' ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="account_ltd">LTD.</label>
-                            </div>
                             @error('account_type')
                                 <div class="text-danger small mt-1 d-block">{{ $message }}</div>
                             @enderror

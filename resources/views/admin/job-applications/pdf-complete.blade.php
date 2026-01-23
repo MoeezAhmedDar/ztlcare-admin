@@ -105,27 +105,25 @@
         <td>Day/Night Shift: {{ $jobApplication->current_shift_type }}</td>
     </tr>
 </table>
-@php $histories = $jobApplication->workHistories; @endphp
-@for($i = 0; $i < 3; $i++)
-@php $h = $histories[$i] ?? null; @endphp
-<table>
-    <tr><td class="section-title" colspan="2">PREVIOUS JOB</td></tr>
-    <tr>
-        <td style="width:50%;">From: {{ $h ? optional($h->from_date)->format('m/Y') : '' }}</td>
-        <td style="width:50%;">To: {{ $h ? optional($h->to_date)->format('m/Y') : '' }}</td>
-    </tr>
-    <tr><td colspan="2">Name of Employer: {{ $h->employer_name ?? '' }}</td></tr>
-    <tr><td colspan="2">Job Title: {{ $h->job_title ?? '' }}</td></tr>
-    <tr><td colspan="2">Main Responsibilities: {{ $h->main_responsibilities ?? '' }}</td></tr>
-    <tr><td colspan="2">Address: {{ $h->employer_address ?? '' }}</td></tr>
-    <tr><td colspan="2">Reason for Leaving: {{ $h->reason_for_leaving ?? '' }}</td></tr>
-</table>
-@endfor
+@foreach($jobApplication->workHistories as $h)
+    <table>
+        <tr><td class="section-title" colspan="2">PREVIOUS JOB</td></tr>
+        <tr>
+            <td style="width:50%;">From: {{ optional($h->from_date)->format('m/Y') }}</td>
+            <td style="width:50%;">To: {{ optional($h->to_date)->format('m/Y') }}</td>
+        </tr>
+        <tr><td colspan="2">Name of Employer: {{ $h->employer_name ?? '' }}</td></tr>
+        <tr><td colspan="2">Job Title: {{ $h->job_title ?? '' }}</td></tr>
+        <tr><td colspan="2">Main Responsibilities: {{ $h->main_responsibilities ?? '' }}</td></tr>
+        <tr><td colspan="2">Address: {{ $h->employer_address ?? '' }}</td></tr>
+        <tr><td colspan="2">Reason for Leaving: {{ $h->reason_for_leaving ?? '' }}</td></tr>
+    </table>
+@endforeach
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
 <div class="page-break"></div>
 
 {{-- PAGE 3 --}}
-<div class="header">
+<!-- <div class="header">
     <div class="header-left">358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA<br>T: 01698 701199<br>E: info@ztl.care&nbsp;&nbsp;W: www.ztl.care</div>
     <div class="header-right">@if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif</div>
 </div>
@@ -145,7 +143,7 @@
 </table>
 @endfor
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
-<div class="page-break"></div>
+<div class="page-break"></div> -->
 
 {{-- PAGE 4 --}}
 <div class="header">
@@ -175,41 +173,66 @@
     </tr>
     @endfor
 </table>
+@php
+    // Get the training array from DB
+    $trainings = $jobApplication->training->mandatory_training ?? [];
+    
+    // If it's stored as JSON string, decode it
+    if (is_string($trainings)) {
+        $trainings = json_decode($trainings, true) ?? [];
+    }
+
+    // Define all possible trainings with their display names
+    $trainingList = [
+        'moving_handling'               => 'Moving and Handling',
+        'basic_life_support'            => 'Basic Life Support',
+        'intermediate_life_support'     => 'Intermediate Life Support',
+        'advance_life_support'          => 'Advanced Life Support',
+        'handling_violence'             => 'Handling Violence and Aggression',
+        'fire_safety'                   => 'Fire Safety',
+        'coshh'                         => 'COSHH',
+        'riddor'                        => 'RIDDOR',
+        'data_protection'               => 'Data Protection',
+        'complaints_handling'           => 'Complaints Handling',
+        'caldicott_protocols'           => 'Caldicott Protocols',
+        'infection_control'             => 'Infection Control',
+        'lone_worker'                   => 'Lone Worker Training',
+        'food_hygiene'                  => 'Food Hygiene (where required to handle food)',
+        'personal_safety_mental_health' => 'Personal Safety (Mental Health and Learning Dis.)',
+        'covid_19'                      => 'Covid-19',
+    ];
+@endphp
+
 <table>
-    <tr><td class="section-title">MANDATORY TRAINING</td></tr>
-    <tr><td style="font-size:8px; font-style:italic;">Please tick if you have completed the following training within the last 12 months, please enclose copies of your training certificates.</td></tr>
+    <tr>
+        <td class="section-title">MANDATORY TRAINING</td>
+    </tr>
+    <tr>
+        <td style="font-size:8px; font-style:italic;" colspan="4">
+            Please tick if you have completed the following training within the last 12 months, please enclose copies of your training certificates.
+        </td>
+    </tr>
 </table>
+
 <table>
-    <tr>
-        <td style="width:25%;">Moving and Handling: {!! $box(false) !!}</td>
-        <td style="width:25%;">Basic Life Support: {!! $box(false) !!}</td>
-        <td style="width:25%;">Intermediate Life Support: {!! $box(false) !!}</td>
-        <td style="width:25%;">Advance Life Support: {!! $box(false) !!}</td>
-    </tr>
-    <tr>
-        <td>Complaints Handling: {!! $box(false) !!}</td>
-        <td>Handling Violence and Aggression: {!! $box(false) !!}</td>
-        <td>Fire safety: {!! $box(false) !!}</td>
-        <td>COSHH: {!! $box(false) !!}</td>
-    </tr>
-    <tr>
-        <td>RIDDOR: {!! $box(false) !!}</td>
-        <td>Caldicott Protocols: {!! $box(false) !!}</td>
-        <td>Data Protection: {!! $box(false) !!}</td>
-        <td>Infection Control: {!! $box(false) !!}</td>
-    </tr>
-    <tr>
-        <td>Lone Worker Training: {!! $box(false) !!}</td>
-        <td>Food Hygiene (where required to handle food): {!! $box(false) !!}</td>
-        <td>Personal Safety (Mental Health and Learning Dis.): {!! $box(false) !!}</td>
-        <td>Covid-19: {!! $box(false) !!}</td>
-    </tr>
-</table>
-<table>
-    <tr>
-        <td style="width:30%;">Other (please list):</td>
-        <td style="min-height:32px;">{{ optional($jobApplication->training)->other_training }}</td>
-    </tr>
+    <?php $chunks = array_chunk($trainingList, 4, true); ?>
+    @foreach($chunks as $row)
+        <tr>
+            @foreach($row as $slug => $label)
+                <td style="width:25%;">
+                    {{ $label }}: 
+                    {!! in_array($slug, $trainings) ? $box(true) : $box(false) !!}
+                </td>
+            @endforeach
+
+            {{-- Fill remaining cells if last row has fewer than 4 items --}}
+            @if(count($row) < 4)
+                @for($i = count($row); $i < 4; $i++)
+                    <td style="width:25%;"></td>
+                @endfor
+            @endif
+        </tr>
+    @endforeach
 </table>
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
 <div class="page-break"></div>
@@ -241,7 +264,8 @@
     <tr><td colspan="2">Name of Bank/Building Society: {{ $jobApplication->bank_name }}</td></tr>
     <tr>
         <td style="width:50%;">Account Name: {{ $jobApplication->account_name }}</td>
-        <td>Account Type: Personal {!! $box($jobApplication->account_type === 'Personal') !!} &nbsp;&nbsp; LTD. {!! $box($jobApplication->account_type === 'LTD') !!}</td>
+        <td>Account Type: Personal</td>
+        <!-- <td>Account Type: Personal {!! $box($jobApplication->account_type === 'Personal') !!} &nbsp;&nbsp; LTD. {!! $box($jobApplication->account_type === 'LTD') !!}</td> -->
     </tr>
     <tr><td colspan="2">Branch Address: {{ $jobApplication->bank_branch_address }}</td></tr>
     <tr><td colspan="2">Postcode: {{ $jobApplication->bank_postcode }}</td></tr>
@@ -256,21 +280,98 @@
     <tr><td colspan="2">Do you have use of a car? Yes {!! $box($jobApplication->has_car) !!} &nbsp;&nbsp; No {!! $box(!$jobApplication->has_car) !!}</td></tr>
 </table>
 @php $imm = optional($jobApplication->immunisation); @endphp
-<table>
+<table style="page-break-inside: avoid;">
     <tr><td class="section-title" colspan="4">IMMUNISATIONS</td></tr>
-    <tr><td colspan="4" style="font-size:8px;">Please indicate which off the following Immunisations you have been vaccinated against and include your vaccination reports when returning your registration.</td></tr>
-    <tr><td style="width:20%;">Hep B</td><td style="width:30%;">Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td><td style="width:20%;">TB</td><td>Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td></tr>
-    <tr><td>Varicella</td><td>Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td><td>Measles</td><td>Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td></tr>
-    <tr><td>Rubella</td><td colspan="3">Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td></tr>
-    <tr><td>Hep B Antigen</td><td colspan="3">No Proof {!! $box(false) !!} &nbsp; Negative {!! $box(false) !!} &nbsp; Positive {!! $box(false) !!}</td></tr>
-    <tr><td>Hep C</td><td colspan="3">No Proof {!! $box(false) !!} &nbsp; Negative {!! $box(false) !!} &nbsp; Positive {!! $box(false) !!}</td></tr>
-    <tr><td>HIV</td><td colspan="3">No Proof {!! $box(false) !!} &nbsp; Negative {!! $box(false) !!} &nbsp; Positive {!! $box(false) !!}</td></tr>
-    <tr><td colspan="4" style="font-size:8px;">All applications who cannot provide a registered PVG/DBS Number or full immunisation record will be required to complete at their own cost. Candidates will be required to purchase uniform if required at the cost of £20 this will be deducted from your timesheet once you have started working through us.</td></tr>
+    <tr>
+        <td colspan="4" style="font-size:8px;">
+            Please indicate which of the following Immunisations you have been vaccinated against and include your vaccination reports when returning your registration.
+        </td>
+    </tr>
+
+    <!-- Yes/No style fields -->
+    <tr>
+        <td style="width:20%;">Hep B</td>
+        <td style="width:30%;">
+            Yes {!! $box($imm->hep_b == '1' || $imm->hep_b == 1) !!} 
+            &nbsp; No {!! $box($imm->hep_b == '0' || $imm->hep_b == 0) !!}
+        </td>
+        <td style="width:20%;">TB</td>
+        <td>
+            Yes {!! $box($imm->tb == '1' || $imm->tb == 1) !!} 
+            &nbsp; No {!! $box($imm->tb == '0' || $imm->tb == 0) !!}
+        </td>
+    </tr>
+
+    <tr>
+        <td>Varicella</td>
+        <td>
+            Yes {!! $box($imm->varicella == '1' || $imm->varicella == 1) !!} 
+            &nbsp; No {!! $box($imm->varicella == '0' || $imm->varicella == 0) !!}
+        </td>
+        <td>Measles</td>
+        <td>
+            Yes {!! $box($imm->measles == '1' || $imm->measles == 1) !!} 
+            &nbsp; No {!! $box($imm->measles == '0' || $imm->measles == 0) !!}
+        </td>
+    </tr>
+
+    <tr>
+        <td>Rubella</td>
+        <td colspan="3">
+            Yes {!! $box($imm->rubella == '1' || $imm->rubella == 1) !!} 
+            &nbsp; No {!! $box($imm->rubella == '0' || $imm->rubella == 0) !!}
+        </td>
+    </tr>
+
+    <!-- Select-style fields -->
+    <tr>
+        <td>Hep B Antigen</td>
+        <td colspan="3">
+            No Proof {!! $box($imm->hep_b_antigen === 'No Proof') !!} 
+            &nbsp; Negative {!! $box($imm->hep_b_antigen === 'Negative') !!} 
+            &nbsp; Positive {!! $box($imm->hep_b_antigen === 'Positive') !!}
+        </td>
+    </tr>
+
+    <tr>
+        <td>Hep C</td>
+        <td colspan="3">
+            No Proof {!! $box($imm->hep_c === 'No Proof') !!} 
+            &nbsp; Negative {!! $box($imm->hep_c === 'Negative') !!} 
+            &nbsp; Positive {!! $box($imm->hep_c === 'Positive') !!}
+        </td>
+    </tr>
+
+    <tr>
+        <td>HIV</td>
+        <td colspan="3">
+            No Proof {!! $box($imm->hiv === 'No Proof') !!} 
+            &nbsp; Negative {!! $box($imm->hiv === 'Negative') !!} 
+            &nbsp; Positive {!! $box($imm->hiv === 'Positive') !!}
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan="4" style="font-size:8px;">
+            All applications who cannot provide a registered PVG/DBS Number or full immunisation record will be required to complete at their own cost. 
+            Candidates will be required to purchase uniform if required at the cost of £20 this will be deducted from your timesheet once you have started working through us.
+        </td>
+    </tr>
+
     <tr><td colspan="4">Please sign to say you have read and understood the above</td></tr>
-    <tr><td colspan="2">Your Signature: ______________________</td><td colspan="2">Date: ____________</td></tr>
+
+    <!-- Fixed Signature & Date row: compact, same line, no page break -->
+    <tr style="page-break-inside: avoid;">
+        <td colspan="4" style="padding: 8px 0; font-size: 10px; white-space: nowrap; border-top: none;">
+            Signed: {{ $jobApplication->forename . ' ' . $jobApplication->surname }} &nbsp;&nbsp;&nbsp;
+            Print Name: {{ $jobApplication->forename . ' ' . $jobApplication->surname }} &nbsp;&nbsp;&nbsp;
+            Date: {{ $jobApplication->created_at ? $jobApplication->created_at->format('d/m/Y') : '_________________' }}
+        </td>
+    </tr>
 </table>
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
 <div class="page-break"></div>
+
 
 {{-- PAGE 6: REGISTRATION DECLARATION FORMS --}}
 <div class="header">
@@ -279,85 +380,320 @@
 </div>
 <h2>REGISTRATION DECLARATION FORMS</h2>
 <p class="instruction">Please read before signing</p>
+
+@php
+    // Model already casts JSON to array — no json_decode needed
+    $disabilityData      = $jobApplication->disability_declaration      ?? [];
+    $healthData          = $jobApplication->health_declaration          ?? [];
+    $confData            = $jobApplication->confidentiality_declaration ?? [];
+    $photoData           = $jobApplication->photo_consent               ?? [];
+    $personalData        = $jobApplication->personal_declaration        ?? [];
+    $workingTimeData     = $jobApplication->working_time_declaration    ?? [];
+    $otherData           = $jobApplication->other_declaration           ?? [];
+    $healthSafetyData    = $jobApplication->health_safety_declaration   ?? [];
+
+    // Use same value for Signed + Print Name (as requested)
+    $healthName       = $healthData['signature']       ?? '';
+    $healthDate       = $healthData['date']            ?? '';
+
+    $disabilityName   = $disabilityData['signature']   ?? '';
+    $disabilityDate   = $disabilityData['date']        ?? '';
+    $hasDisability    = $disabilityData['has_disability'] ?? null;
+
+    $confName         = $confData['signature']         ?? '';
+    $confDate         = $confData['date']              ?? '';
+
+    $photoName        = $photoData['signature']        ?? '';
+    $photoDate        = $photoData['date']             ?? '';
+
+    $personalName     = $personalData['signature']     ?? '';
+    $personalDate     = $personalData['date']          ?? '';
+
+    $workingTimeName  = $workingTimeData['signature']  ?? '';
+    $workingTimeDate  = $workingTimeData['date']       ?? '';
+
+    $otherName        = $otherData['signature']        ?? '';
+    $otherDate        = $otherData['date']             ?? '';
+
+    $healthSafetyName = $healthSafetyData['signature'] ?? '';
+    $healthSafetyDate = $healthSafetyData['date']      ?? '';
+@endphp
+
 <table>
     <tr><td class="section-title">HEALTH DECLARATIONS</td></tr>
-    <tr><td style="font-size:9px;">We would ask all OVERSEAS candidates to provide a medical statement from their GP or medical department confirming your state of health. Your details will be passed to our Occupational Health Doctors to establish your fitness for work. Please sign the declaration below to allow ZAN Traders Ltd to release your information for inspection.<br><br>I ........................................................................................................................ consent to ZAN Traders Ltd<br>releasing my health and immunisation records for review. I understand that based on this review I may be required to undergo a medical examination to establish my fitness for work.<br><br>I confirm that I will immediately inform ZAN Traders Ltd in confidence if I am HIV Positive, Hep B positive or if I have AIDS in accordance with the Department of Health guidelines. I am aware of my obligations regarding MRSA contact and the need for screening. I agree to immediately inform ZAN Traders Ltd should my general condition of health change.<br><br>I will inform ZAN Traders Ltd immediately if I discover that I am pregnant. I understand that withholding information or giving false answers may lead to dismissal. I also hereby consent to ZAN Traders Ltd obtaining further information regarding my health from my GP or Occupational Health Department.</td></tr>
-    <tr><td>Signed: _________________ &nbsp;&nbsp; Print Name: _________________ &nbsp;&nbsp; Date: _________________</td></tr>
+    <tr>
+        <td style="font-size:9px;">
+            We would ask all OVERSEAS candidates to provide a medical statement from their GP or medical department confirming your state of health. Your details will be passed to our Occupational Health Doctors to establish your fitness for work. Please sign the declaration below to allow ZAN Traders Ltd to release your information for inspection.<br><br>
+            I {{ $healthName ?: '_________________' }} consent to ZAN Traders Ltd<br>
+            releasing my health and immunisation records for review. I understand that based on this review I may be required to undergo a medical examination to establish my fitness for work.<br><br>
+            I confirm that I will immediately inform ZAN Traders Ltd in confidence if I am HIV Positive, Hep B positive or if I have AIDS in accordance with the Department of Health guidelines. I am aware of my obligations regarding MRSA contact and the need for screening. I agree to immediately inform ZAN Traders Ltd should my general condition of health change.<br><br>
+            I will inform ZAN Traders Ltd immediately if I discover that I am pregnant. I understand that withholding information or giving false answers may lead to dismissal. I also hereby consent to ZAN Traders Ltd obtaining further information regarding my health from my GP or Occupational Health Department.
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 12px 0; font-size: 10px; white-space: nowrap;">
+            Signed: {{ $healthName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Print Name: {{ $healthName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Date: {{ $healthDate ?: '_________________' }}
+        </td>
+    </tr>
 </table>
+
 <table>
     <tr><td class="section-title">DISABILITY DISCRIMINATION ACT</td></tr>
-    <tr><td style="font-size:9px;">Applicants with disabilities will be invited for interview if the essential job criteria are met. Do you consider yourself to be a person with a disability as described by the disability discrimination act 1995? i.e. do you consider yourself to be someone who has a physical or mental impairment which has a substantial and long term adverse effect on your ability to carry out normal day to day activities</td></tr>
-    <tr><td>Yes {!! $box(false) !!} &nbsp;&nbsp; No {!! $box(false) !!}</td></tr>
-    <tr><td>Signed: _________________ &nbsp;&nbsp; Print Name: _________________ &nbsp;&nbsp; Date: _________________</td></tr>
+    <tr>
+        <td style="font-size:9px;">
+            Applicants with disabilities will be invited for interview if the essential job criteria are met. Do you consider yourself to be a person with a disability as described by the disability discrimination act 1995? i.e. do you consider yourself to be someone who has a physical or mental impairment which has a substantial and long term adverse effect on your ability to carry out normal day to day activities
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Yes {!! $box($hasDisability === '1' || $hasDisability === 1) !!} 
+            &nbsp;&nbsp; 
+            No  {!! $box($hasDisability === '0' || $hasDisability === 0) !!}
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 12px 0; font-size: 10px; white-space: nowrap;">
+            Signed: {{ $disabilityName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Print Name: {{ $disabilityName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Date: {{ $disabilityDate ?: '_________________' }}
+        </td>
+    </tr>
 </table>
+
 <table>
     <tr><td class="section-title">CONFIDENTIALITY</td></tr>
-    <tr><td style="font-size:9px;">I hereby declare that at no time will I divulge to any person, nor use for my own or any other person's benefit, any confidential information in relation to ZAN Traders Ltd or in relation to any of their employees, business affairs, transactions, or finances which I may acquire during the term of my agreement with ZAN Traders Ltd under the Terms of Engagement.</td></tr>
-    <tr><td>Signed: _________________ &nbsp;&nbsp; Print Name: _________________ &nbsp;&nbsp; Date: _________________</td></tr>
+    <tr>
+        <td style="font-size:9px;">
+            I hereby declare that at no time will I divulge to any person, nor use for my own or any other person's benefit, any confidential information...
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 12px 0; font-size: 10px; white-space: nowrap;">
+            Signed: {{ $confName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Print Name: {{ $confName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Date: {{ $confDate ?: '_________________' }}
+        </td>
+    </tr>
 </table>
+
 <table>
     <tr><td class="section-title">CONSENT FOR THE USE OF STAFF PHOTOGRAPHIC IMAGES</td></tr>
-    <tr><td style="font-size:9px;">To comply with the principle, set out in the Data Protection Act 2018 and GDPR, ZAN Traders Ltd requires consent to take and use staff photographic images. By signing this declaration, you authorise ZAN Traders Ltd to use your images in publications, promotions, social media, advertising, website and any other digital media or filming which ZAN Traders Ltd approves and authorise. If you should wish to withdraw your consent at any time, please contact us at info@ztl.care. Please note that although your images will be removed from our data base on request, we cannot guarantee it will not be in circulation in any media produced prior to your request.<br><br>I hereby consent for my photographic images to be used as stated above.</td></tr>
-    <tr><td>Signed: _________________ &nbsp;&nbsp; Print Name: _________________ &nbsp;&nbsp; Date: _________________</td></tr>
+    <tr>
+        <td style="font-size:9px;">
+            To comply with the principle, set out in the Data Protection Act 2018 and GDPR...
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 12px 0; font-size: 10px; white-space: nowrap;">
+            Signed: {{ $photoName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Print Name: {{ $photoName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Date: {{ $photoDate ?: '_________________' }}
+        </td>
+    </tr>
 </table>
+
 <table>
     <tr><td class="section-title">PERSONAL DECLARATIONS</td></tr>
-    <tr><td style="font-size:9px;">I hereby confirm that the information provided on my application is correct and true to the best of my knowledge and that I have not withheld any information that should be considered when offering me work.<br><br>I understand that providing false or inaccurate information may result in the termination of any placement. I agree that I will make best endeavours to make myself aware of the Health & Safety procedures for each client I am assigned to.<br><br>I confirm that I have read and understood the Terms of Engagement and the terms of the declaration and agree to be bound by them.</td></tr>
+    <tr>
+        <td style="font-size:9px;">
+            I hereby confirm that the information provided on my application is correct and true...
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 12px 0; font-size: 10px; white-space: nowrap;">
+            Signed: {{ $personalName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Print Name: {{ $personalName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Date: {{ $personalDate ?: '_________________' }}
+        </td>
+    </tr>
 </table>
- <table>
-        <tr><td>Signed: _________________ &nbsp;&nbsp; Print Name: _________________ &nbsp;&nbsp; Date: _________________</td></tr>
-    </table>
-    <table>
-        <tr><td class="section-title">WORKING TIME REGULATIONS DECLARATIONS</td></tr>
-        <tr><td style="font-size:9px;">For the purposes of the Working Time Regulations 1998 (as amended) I, consent to work more than an average of 48 hours per week, averaged over 17 weeks. I understand that I may withdraw this consent by giving ZAN Traders Ltd not less than three months' notice at any time.</td></tr>
-        <tr><td>Signed: _________________ &nbsp;&nbsp; Print Name: _________________ &nbsp;&nbsp; Date: _________________</td></tr>
-    </table>
-</div>
+
+<table>
+    <tr><td class="section-title">WORKING TIME REGULATIONS DECLARATIONS</td></tr>
+    <tr>
+        <td style="font-size:9px;">
+            For the purposes of the Working Time Regulations 1998 (as amended) I, consent to work...
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 12px 0; font-size: 10px; white-space: nowrap;">
+            Signed: {{ $workingTimeName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Print Name: {{ $workingTimeName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Date: {{ $workingTimeDate ?: '_________________' }}
+        </td>
+    </tr>
+</table>
+
 <table>
     <tr><td class="section-title">OTHER DECLARATIONS</td></tr>
-    <tr><td style="font-size:9px;">In addition, I also consent to work more than the maximum number of hours permitted to work at night under the directive. Please note you are under no obligation to sign either declaration.</td></tr>
-    <tr><td>Signed: _________________ &nbsp;&nbsp; Print Name: _________________ &nbsp;&nbsp; Date: _________________</td></tr>
+    <tr>
+        <td style="font-size:9px;">
+            In addition, I also consent to work more than the maximum number of hours permitted...
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 12px 0; font-size: 10px; white-space: nowrap;">
+            Signed: {{ $otherName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Print Name: {{ $otherName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Date: {{ $otherDate ?: '_________________' }}
+        </td>
+    </tr>
 </table>
+
 <table>
     <tr><td class="section-title">HEALTH AND SAFETY</td></tr>
-    <tr><td style="font-size:9px;">Each agency worker has a responsibility at the start of their first shift to become familiar with the Client's details including medical details.</td></tr>
-    <tr><td>Signed: _________________ &nbsp;&nbsp; Print Name: _________________ &nbsp;&nbsp; Date: _________________</td></tr>
+    <tr>
+        <td style="font-size:9px;">
+            Each agency worker has a responsibility at the start of their first shift...
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 12px 0; font-size: 10px; white-space: nowrap;">
+            Signed: {{ $healthSafetyName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Print Name: {{ $healthSafetyName ?: '_________________' }} &nbsp;&nbsp;&nbsp;
+            Date: {{ $healthSafetyDate ?: '_________________' }}
+        </td>
+    </tr>
 </table>
+
 <table>
     <tr><td class="section-title">RIGHT TO WORK IN THE UK</td></tr>
-    <tr><td style="font-size:9px;">Please complete this form, regardless of your nationality, as it is a legal requirement. If you are an overseas national or require a work permit to work in the UK, please include copies of supporting documentation.<br>Your entitlement for working in the UK is based upon what status:</td></tr>
-    <tr><td>EU Citizen (Visa): {!! $box(false) !!} &nbsp;&nbsp; Spouse of an EU Citizen (Visa): {!! $box(false) !!} &nbsp;&nbsp; Work Permit: {!! $box(false) !!}</td></tr>
-    <tr><td>Permit-free Visa: {!! $box(false) !!} &nbsp;&nbsp; Right of Abode in the UK: {!! $box(false) !!} &nbsp;&nbsp; Admitted to UK as Doctor Prior to 1985: {!! $box(false) !!}</td></tr>
+    <tr>
+        <td style="font-size:9px;">
+            Please complete this form, regardless of your nationality, as it is a legal requirement. If you are an overseas national or require a work permit to work in the UK, please include copies of supporting documentation.<br>
+            Your entitlement for working in the UK is based upon what status:
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 8px 0; font-size: 10px;">
+            EU Citizen (Visa): {!! $box($jobApplication->right_to_work_status === 'EU Citizen' || $jobApplication->right_to_work_status === 'EU Citizen (Visa)') !!} 
+              Spouse of an EU Citizen (Visa): {!! $box($jobApplication->right_to_work_status === 'Spouse of EU Citizen' || $jobApplication->right_to_work_status === 'Spouse of an EU Citizen (Visa)') !!} 
+              Work Permit: {!! $box($jobApplication->right_to_work_status === 'Work Permit') !!}
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 8px 0 12px 0; font-size: 10px;">
+            Permit-free Visa: {!! $box($jobApplication->right_to_work_status === 'Permit-free Visa') !!} 
+              Indefinite leave to remain in uk: {!! $box($jobApplication->right_to_work_status === 'Right of Abode' || $jobApplication->right_to_work_status === 'Right of Abode in the UK') !!} 
+              Admitted to UK as Doctor Prior to 1985: {!! $box($jobApplication->right_to_work_status === 'Doctor Prior to 1985' || $jobApplication->right_to_work_status === 'Admitted to UK as Doctor Prior to 1985') !!}
+        </td>
+    </tr>
 </table>
+
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
 <div class="page-break"></div>
 
-{{-- PAGE 7: MORE DECLARATIONS --}}
+{{-- PAGE 7: REHABILITATION OF OFFENDERS ACT --}}
 <div class="header">
     <div class="header-left">358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA<br>T: 01698 701199<br>E: info@ztl.care&nbsp;&nbsp;W: www.ztl.care</div>
     <div class="header-right">@if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif</div>
 </div>     
+
 <table> 
-    <tr><td class="section-title" colspan="2">REHABILITATION OF OFFENDERS ACT 1974 – Please answer all five questions</td></tr>
-    <tr><td colspan="2" style="font-size:8px;">Because of the nature of the work for which you are applying, Section 4(2), and further Orders made by the Secretary of State under the provision of this section of the Rehabilitation of Offenders Act (1974) (Exceptions) Order 1975 apply. Applicants are therefore required to give information about convictions which for other purposes are "spent" under the provisions of the Act. Any information given will be completely confidential and will be considered only in relation for positions to which the order applies.</td></tr>
-    <tr><td class="label" style="width:70%;">1. Do you have any convictions, cautions or bindovers?</td><td style="width:30%;">Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td></tr>
-    <tr><td colspan="2">If yes, please give details...</td></tr>
-    <tr><td colspan="2" style="min-height:20px;"></td></tr>
-    <tr><td class="label">2. Have you ever had disciplinary action taken against you?</td><td>Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td></tr>
-    <tr><td colspan="2">If yes, please give details...</td></tr>
-    <tr><td colspan="2" style="min-height:20px;"></td></tr>
-    <tr><td class="label">3. Are you at present the subject of criminal charges or disciplinary action?</td><td>Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td></tr>
-    <tr><td colspan="2">If yes, please give details...</td></tr>
-    <tr><td colspan="2" style="min-height:20px;"></td></tr>
-    <tr><td class="label">4. Do you consent to ZAN Traders Ltd requesting a police check and any appropriate references on your behalf?</td><td>Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td></tr>
-    <tr><td class="label">5. Have you been police checked in the last three years?</td><td>Yes {!! $box(false) !!} &nbsp; No {!! $box(false) !!}</td></tr>
-    <tr><td colspan="2">If so, by whom...</td></tr>
-    <tr><td colspan="2" style="min-height:20px;"></td></tr>
-    <tr><td colspan="2">Signed: _________________________<br><br>Print Name: _________________________</td></tr>
-    <tr><td colspan="2">Date: _________________________</td></tr>
+    <tr>
+        <td class="section-title" colspan="2">REHABILITATION OF OFFENDERS ACT 1974 – Please answer all five questions</td>
+    </tr>
+    <tr>
+        <td colspan="2" style="font-size:8px;">
+            Because of the nature of the work for which you are applying, Section 4(2), and further Orders made by the Secretary of State under the provision of this section of the Rehabilitation of Offenders Act (1974) (Exceptions) Order 1975 apply. Applicants are therefore required to give information about convictions which for other purposes are "spent" under the provisions of the Act. Any information given will be completely confidential and will be considered only in relation for positions to which the order applies.
+        </td>
+    </tr>
+
+    <!-- Question 1 -->
+    <tr>
+        <td class="label" style="width:70%;">
+            1. Do you have any convictions, cautions or bindovers?
+        </td>
+        <td style="width:30%;">
+            Yes {!! $box($jobApplication->has_convictions === true || $jobApplication->has_convictions == 1) !!} 
+              No {!! $box($jobApplication->has_convictions === false || $jobApplication->has_convictions == 0) !!}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="font-size:9px; padding: 6px 0;">
+            If yes, please give details...<br>
+            {{ $jobApplication->convictions_details ?? '' }}
+        </td>
+    </tr>
+
+    <!-- Question 2 -->
+    <tr>
+        <td class="label">
+            2. Have you ever had disciplinary action taken against you?
+        </td>
+        <td>
+            Yes {!! $box($jobApplication->has_disciplinary === true || $jobApplication->has_disciplinary == 1) !!} 
+              No {!! $box($jobApplication->has_disciplinary === false || $jobApplication->has_disciplinary == 0) !!}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="font-size:9px; padding: 6px 0;">
+            If yes, please give details...<br>
+            {{ $jobApplication->disciplinary_details ?? '' }}
+        </td>
+    </tr>
+
+    <!-- Question 3 -->
+    <tr>
+        <td class="label">
+            3. Are you at present the subject of criminal charges or disciplinary action?
+        </td>
+        <td>
+            Yes {!! $box($jobApplication->has_criminal_charges === true || $jobApplication->has_criminal_charges == 1) !!} 
+              No {!! $box($jobApplication->has_criminal_charges === false || $jobApplication->has_criminal_charges == 0) !!}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="font-size:9px; padding: 6px 0;">
+            If yes, please give details...<br>
+            {{ $jobApplication->criminal_charges_details ?? '' }}
+        </td>
+    </tr>
+
+    <!-- Question 4 -->
+    <tr>
+        <td class="label">
+            4. Do you consent to ZAN Traders Ltd requesting a police check and any appropriate references on your behalf?
+        </td>
+        <td>
+            Yes {!! $box($jobApplication->consents_police_check === true || $jobApplication->consents_police_check == 1) !!} 
+              No {!! $box($jobApplication->consents_police_check === false || $jobApplication->consents_police_check == 0) !!}
+        </td>
+    </tr>
+
+    <!-- Question 5 -->
+    <tr>
+        <td class="label">
+            5. Have you been police checked in the last three years?
+        </td>
+        <td>
+            Yes {!! $box($jobApplication->police_checked_recently === true || $jobApplication->police_checked_recently == 1) !!} 
+              No {!! $box($jobApplication->police_checked_recently === false || $jobApplication->police_checked_recently == 0) !!}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="font-size:9px; padding: 6px 0;">
+            If so, by whom...<br>
+            {{ $jobApplication->police_check_details ?? '' }}
+        </td>
+    </tr>
+
+    <!-- Signature area -->
+    <!-- <tr>
+        <td colspan="2" style="padding: 16px 0 8px 0; font-size: 10px;">
+            Signed: _________________________<br><br>
+            Print Name: _________________________<br><br>
+            Date: _________________________
+        </td>
+    </tr> -->
 </table>
+
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
 <div class="page-break"></div>
+
+
 
 {{-- PAGE 8: REFERENCES --}}
 <div class="header">
@@ -367,25 +703,68 @@
 
 <table>
     <tr><td class="section-title" colspan="2">REFERENCE</td></tr>
-    <tr><td colspan="2" style="font-size:8px;">Give details of the names/addresses of two work-related Referees. One of the Referees should be your current employer, or if presently unemployed or self-employed, your last employer</td></tr>
-    <tr><td class="label" style="width:50%;">Name:</td><td class="label">Name:</td></tr>
-    <tr><td>{{ $jobApplication->references[0]->name ?? '' }}</td><td>{{ $jobApplication->references[1]->name ?? '' }}</td></tr>
+    <tr><td colspan="2" style="font-size:8px;">
+        Give details of the names/addresses of two work-related Referees. One of the Referees should be your current employer, or if presently unemployed or self-employed, your last employer
+    </td></tr>
+
+    <!-- Reference 1 -->
+    <tr><td class="label" style="width:50%;">Name:</td><td class="label" style="width:50%;">Name:</td></tr>
+    <tr>
+        <td>{{ $jobApplication->references[0]->name ?? '' }}</td>
+        <td>{{ $jobApplication->references[1]->name ?? '' }}</td>
+    </tr>
+
     <tr><td class="label">Position:</td><td class="label">Position:</td></tr>
-    <tr><td>{{ $jobApplication->references[0]->position ?? '' }}</td><td>{{ $jobApplication->references[1]->position ?? '' }}</td></tr>
+    <tr>
+        <td>{{ $jobApplication->references[0]->position ?? '' }}</td>
+        <td>{{ $jobApplication->references[1]->position ?? '' }}</td>
+    </tr>
+
     <tr><td class="label">Company Name and Address:</td><td class="label">Company Name and Address:</td></tr>
-    <tr><td>{{ $jobApplication->references[0]->company_address ?? '' }}</td><td>{{ $jobApplication->references[1]->company_address ?? '' }}</td></tr>
+    <tr>
+        <td>{{ $jobApplication->references[0]->company_address ?? '' }}</td>
+        <td>{{ $jobApplication->references[1]->company_address ?? '' }}</td>
+    </tr>
+
     <tr><td class="label">Telephone Number</td><td class="label">Telephone Number</td></tr>
-    <tr><td>{{ $jobApplication->references[0]->telephone ?? '' }}</td><td>{{ $jobApplication->references[1]->telephone ?? '' }}</td></tr>
+    <tr>
+        <td>{{ $jobApplication->references[0]->telephone ?? '' }}</td>
+        <td>{{ $jobApplication->references[1]->telephone ?? '' }}</td>
+    </tr>
+
     <tr><td class="label">Email Address:</td><td class="label">Email Address:</td></tr>
-    <tr><td>{{ $jobApplication->references[0]->email ?? '' }}</td><td>{{ $jobApplication->references[1]->email ?? '' }}</td></tr>
+    <tr>
+        <td>{{ $jobApplication->references[0]->email ?? '' }}</td>
+        <td>{{ $jobApplication->references[1]->email ?? '' }}</td>
+    </tr>
+
     <tr><td class="label">May we contact the above person now?</td><td class="label">May we contact the above person now?</td></tr>
-    <tr><td>Yes {!! $box(false) !!} &nbsp;&nbsp; No {!! $box(false) !!}</td><td>Yes {!! $box(false) !!} &nbsp;&nbsp; No {!! $box(false) !!}</td></tr>
+    <tr>
+        <td>
+            Yes {!! $box($jobApplication->references[0]->may_contact_now ?? false) !!} 
+              No {!! $box(!($jobApplication->references[0]->may_contact_now ?? false)) !!}
+        </td>
+        <td>
+            Yes {!! $box($jobApplication->references[1]->may_contact_now ?? false) !!} 
+              No {!! $box(!($jobApplication->references[1]->may_contact_now ?? false)) !!}
+        </td>
+    </tr>
 </table>
+
 <table>
     <tr><td class="section-title" colspan="3">FOR OFFICE USE ONLY</td></tr>
-    <tr><td class="label" style="width:40%;">Application received date:</td><td class="label" style="width:30%;">Interview date:</td><td class="label" style="width:30%;">Outcome:</td></tr>
-    <tr><td>{{ $jobApplication->created_at->format('d/m/Y') }}</td><td></td><td></td></tr>
+    <tr>
+        <td class="label" style="width:40%;">Application received date:</td>
+        <td class="label" style="width:30%;">Interview date:</td>
+        <td class="label" style="width:30%;">Outcome:</td>
+    </tr>
+    <tr>
+        <td>{{ $jobApplication->created_at ? $jobApplication->created_at->format('d/m/Y') : '' }}</td>
+        <td></td>
+        <td></td>
+    </tr>
 </table>
+
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
 <div class="page-break"></div>
 
@@ -397,11 +776,11 @@
 <h2>AVAILABILITY</h2>
 <table>
     <tr><td class="section-title">1. Please indicate when you would like to work. Please tick all relevant boxes.</td></tr>
-    <tr><td>Morning (M-F) {!! $box($pref('Morning (M-F)')) !!}</td></tr>
-    <tr><td>EVENINGS (M-F) {!! $box($pref('Evenings (M-F)')) !!}</td></tr>
-    <tr><td>NIGHTS (M-F) {!! $box($pref('Nights (M-F)')) !!}</td></tr>
+    <tr><td>Morning (M-S) {!! $box($pref('Morning (M-F)')) !!}</td></tr>
+    <tr><td>EVENINGS (M-S) {!! $box($pref('Evenings (M-F)')) !!}</td></tr>
+    <!-- <tr><td>NIGHTS (M-F) {!! $box($pref('Nights (M-F)')) !!}</td></tr>
     <tr><td>Morning (SAT-SUN) {!! $box($pref('Morning (SAT-SUN)')) !!}</td></tr>
-    <tr><td>EVENINGS (SAT-SUN) {!! $box($pref('Evenings (SAT-SUN)')) !!}</td></tr>
+    <tr><td>EVENINGS (SAT-SUN) {!! $box($pref('Evenings (SAT-SUN)')) !!}</td></tr> -->
     <tr><td class="label">OTHER (Please specify):</td></tr>
     <tr><td style="min-height:40px;">{{ $jobApplication->availability_other }}</td></tr>
 </table>
@@ -413,51 +792,5 @@
     <tr><td class="label">If yes, please provide the dates:</td><td>{{ $jobApplication->holidays_dates }}</td></tr>
 </table>
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
-<div class="page-break"></div>
-
-{{-- PAGE 10: REGISTRATION CHECKLIST --}}
-<div class="header">
-    <div class="header-left">358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA<br>T: 01698 701199<br>E: info@ztl.care&nbsp;&nbsp;W: www.ztl.care</div>
-    <div class="header-right">@if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif</div>
-</div>
-<h2>REGISTRATION CHECKLIST</h2>
-<div class="checklist-box">
-<p class="instruction">To complete your registration, you will be required to provide the following documentation</p>
-<ul>
-    <li>{!! $box(false) !!} Completed Registration Form – signed in all requested areas</li>
-    <li>{!! $box(false) !!} CV – E-mailed in word format</li>
-    <li>{!! $box(false) !!} Your Right to work in the UK as well as your passport, we need a copy of the photo page and the outside of the passport.</li>
-    <li>{!! $box(false) !!} Birth Certificate and Driving Licence</li>
-    <li>{!! $box(false) !!} HPC or NMC Entry Certificate and up to date renewal card – SSSC for Carers.</li>
-    <li>{!! $box(false) !!} Copy of your most recent PVG/DBS Number – less than 1 year old</li>
-    <li>{!! $box(false) !!} Training Qualifications – Diploma/Degree/NVQ – Any other training Certificates</li>
-    <li>{!! $box(false) !!} Mandatory Training Certificates > 1 Year to be completed</li>
-    <li style="margin-left:15px;">• Manual Handling</li>
-    <li style="margin-left:15px;">• Basic Life Support, Paediatrics need Paeds Life support and Midwives Newborn Life Support</li>
-    <li style="font-size:8px;">Data Protection, Complaints Handling, COSHH, Fire, Infection Control, Loneworker, Riddor, Violence and Aggression, Health & Safety, Safeguarding</li>
-    <li style="font-size:8px;">Children & Young People Level 2 minimum (if you need to update these please let us know and we will arrange this for you) &nbsp; Mental Health Nurses will need Restraint Training</li>
-    <li>{!! $box(false) !!} Immunisations</li>
-    <li style="margin-left:15px;">• Hep B</li>
-    <li style="margin-left:15px;">• Varicella</li>
-    <li style="margin-left:15px;">• Evidence of BCG – OR completed TB form, or confirmation on Letter Head paper, including your details and the GMC NMC number of the practitioner confirming the scar</li>
-    <li style="margin-left:15px;">• Measles &nbsp;&nbsp;&nbsp; Rubella</li>
-    <li>{!! $box(false) !!} EPP Candidates (IVS = identification was shown at time of blood test)</li>
-    <li style="margin-left:15px;">• Hep B Surface Antigen (IVS)</li>
-    <li style="margin-left:15px;">• Hep C (IVS) &nbsp;&nbsp; HIV (IVS)</li>
-    <li>{!! $box(false) !!} 2x Passport Size Photos</li>
-    <li>{!! $box(false) !!} Proof of National Insurance Number</li>
-    <li>{!! $box(false) !!} 2x Reference forms.</li>
-    <li style="font-size:8px;">Please ask 2 senior members of staff to complete the reference forms and return them to us. This is to speed up your application. If we apply for them ourselves, we often struggle to get them returned and it delays the process. We are happy to apply for them if it is not possible for you to get them. Please ensure they include verification. We will contact the referee to verify once they have been received. All references will be verified by a member of the compliance team, via phone or e-mail.</li>
-    <li>{!! $box(false) !!} To be paid through a Limited Company please ensure you send</li>
-    <li style="margin-left:15px;">• Certificate of Incorporation</li>
-    <li style="margin-left:15px;">• Evidence of limited bank details and company name i.e. bank statement or blank cheque</li>
-    <li>{!! $box(false) !!} VAT Certificate</li>
-    <li>{!! $box(false) !!} Signed Self Billing Form (enclosed)</li>
-    <li>{!! $box(false) !!} One Photo ID.</li>
-    <li>{!! $box(false) !!} Two proof of address.</li>
-</ul>
-</div>
-<div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
-
 </body>
 </html>

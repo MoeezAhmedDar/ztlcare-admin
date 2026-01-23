@@ -20,18 +20,20 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted small mb-4">
-                        Please list all relevant education and qualifications. You can attach certificates or proof documents (optional) for each entry.
+                        Please list all relevant education and qualifications. You can attach certificates or proof documents (optional) for each entry.<br>
+                        <strong>The first entry is required (most recent / highest qualification preferred).</strong>
                     </p>
 
                     <div id="educations-container">
                         @php
                             $savedEducations = old('educations', $formData['step_3']['educations'] ?? []);
-                            $educationCount = !empty($savedEducations) ? count($savedEducations) : 3;
+                            $educationCount = !empty($savedEducations) ? count($savedEducations) : 1;
                         @endphp
 
                         @for($i = 0; $i < $educationCount; $i++)
-                            <div class="form-row align-items-end education-item mb-4 pb-3 border-bottom">
-                                <!-- Establishment -->
+                            <div class="form-row align-items-end education-item mb-4 pb-3 border-bottom" data-index="{{ $i }}">
+                                <input type="hidden" name="educations[{{ $i }}][delete]" value="0" class="delete-flag">
+
                                 <div class="form-group col-md-3">
                                     <label for="educations[{{ $i }}][establishment]">Establishment</label>
                                     <input type="text" name="educations[{{ $i }}][establishment]" class="form-control"
@@ -41,7 +43,6 @@
                                     @enderror
                                 </div>
 
-                                <!-- From -->
                                 <div class="form-group col-md-2">
                                     <label for="educations[{{ $i }}][from_date]">From (YYYY)</label>
                                     <input type="text" name="educations[{{ $i }}][from_date]" class="form-control"
@@ -51,7 +52,6 @@
                                     @enderror
                                 </div>
 
-                                <!-- To -->
                                 <div class="form-group col-md-2">
                                     <label for="educations[{{ $i }}][to_date]">To (YYYY)</label>
                                     <input type="text" name="educations[{{ $i }}][to_date]" class="form-control"
@@ -61,7 +61,6 @@
                                     @enderror
                                 </div>
 
-                                <!-- Qualification -->
                                 <div class="form-group col-md-3">
                                     <label for="educations[{{ $i }}][qualification]">Qualification</label>
                                     <input type="text" name="educations[{{ $i }}][qualification]" class="form-control"
@@ -71,7 +70,6 @@
                                     @enderror
                                 </div>
 
-                                <!-- Grade -->
                                 <div class="form-group col-md-2">
                                     <label for="educations[{{ $i }}][grade]">Grade</label>
                                     <input type="text" name="educations[{{ $i }}][grade]" class="form-control"
@@ -81,7 +79,6 @@
                                     @enderror
                                 </div>
 
-                                <!-- Certificate Upload -->
                                 <div class="form-group col-md-12 mt-3">
                                     <label for="educations[{{ $i }}][certificate]">Attach Certificate / Proof (optional)</label>
                                     <input type="file" name="educations[{{ $i }}][certificate]" class="form-control-file"
@@ -100,6 +97,14 @@
                                         <div class="text-danger small mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+                                @if($i > 0)
+                                    <div class="form-group col-md-12 mt-3 text-right">
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-education">
+                                            <i class="fas fa-trash-alt"></i> Remove
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         @endfor
                     </div>
@@ -110,33 +115,35 @@
                 </div>
             </div>
 
-            <!-- Mandatory Training Section -->
+            <!-- MANDATORY TRAINING SECTION -->
             <div class="card mb-4">
                 <div class="card-header card-header-custom">
                     Mandatory Training
                 </div>
                 <div class="card-body">
-                    <p class="text-muted small mb-3">Please tick if you have completed the following training within the last 12 months</p>
+                    <p class="text-muted small mb-3">
+                        Please tick all the mandatory training courses you have completed **within the last 12 months**.
+                    </p>
 
                     @php
                         $savedTraining = old('mandatory_training', $formData['step_3']['mandatory_training'] ?? []);
                         $trainingItems = [
-                            'moving_handling' => 'Moving and Handling',
-                            'basic_life_support' => 'Basic Life Support',
-                            'intermediate_life_support' => 'Intermediate Life Support',
-                            'advance_life_support' => 'Advance Life Support',
-                            'complaints_handling' => 'Complaints Handling',
-                            'handling_violence' => 'Handling Violence and Aggression',
-                            'fire_safety' => 'Fire Safety',
-                            'coshh' => 'COSHH',
-                            'riddor' => 'RIDDOR',
-                            'caldicott_protocols' => 'Caldicott Protocols',
-                            'data_protection' => 'Data Protection',
-                            'infection_control' => 'Infection Control',
-                            'lone_worker' => 'Lone Worker Training',
-                            'food_hygiene' => 'Food Hygiene (where required to handle food)',
-                            'personal_safety' => 'Personal Safety (Mental Health and Learning Dis.)',
-                            'covid_19' => 'Covid-19',
+                            'moving_handling'               => 'Moving and Handling',
+                            'basic_life_support'            => 'Basic Life Support',
+                            'intermediate_life_support'     => 'Intermediate Life Support',
+                            'advance_life_support'          => 'Advance Life Support',
+                            'complaints_handling'           => 'Complaints Handling',
+                            'handling_violence'             => 'Handling Violence and Aggression',
+                            'fire_safety'                   => 'Fire Safety',
+                            'coshh'                         => 'COSHH',
+                            'riddor'                        => 'RIDDOR',
+                            'caldicott_protocols'           => 'Caldicott Protocols',
+                            'data_protection'               => 'Data Protection',
+                            'infection_control'             => 'Infection Control',
+                            'lone_worker'                   => 'Lone Worker Training',
+                            'food_hygiene'                  => 'Food Hygiene (where required to handle food)',
+                            'personal_safety'               => 'Personal Safety (Mental Health and Learning Dis.)',
+                            'covid_19'                      => 'Covid-19 Awareness / Infection Prevention',
                         ];
                     @endphp
 
@@ -144,20 +151,28 @@
                         @foreach($trainingItems as $key => $label)
                             <div class="col-md-6 mb-2">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="training_{{ $key }}" name="mandatory_training[]" value="{{ $key }}"
+                                    <input type="checkbox" class="custom-control-input" 
+                                           id="training_{{ $key }}" 
+                                           name="mandatory_training[]" 
+                                           value="{{ $key }}"
                                            {{ in_array($key, $savedTraining) ? 'checked' : '' }}>
-                                    <label class="custom-control-label" for="training_{{ $key }}">{{ $label }}</label>
+                                    <label class="custom-control-label" for="training_{{ $key }}">
+                                        {{ $label }}
+                                    </label>
                                 </div>
                             </div>
                         @endforeach
                     </div>
 
                     <div class="form-group mt-4">
-                        <label for="other_training">Other Training (please list)</label>
-                        <textarea name="other_training" id="other_training" class="form-control" rows="3">{{ old('other_training', $formData['step_3']['other_training'] ?? '') }}</textarea>
+                        <label for="other_training">Other Relevant Training / Qualifications (please list)</label>
+                        <textarea name="other_training" id="other_training" class="form-control" rows="3">
+                            {{ old('other_training', $formData['step_3']['other_training'] ?? '') }}
+                        </textarea>
                         @error('other_training')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
+                        <small class="form-text text-muted">e.g. Safeguarding, Mental Health First Aid, etc.</small>
                     </div>
                 </div>
             </div>
@@ -179,9 +194,30 @@
 <script>
 let educationIndex = {{ $educationCount }};
 
+function removeEducationEntry(button) {
+    const $row = $(button).closest('.education-item');
+    
+    if ($row.data('index') === 0) {
+        return; // First entry cannot be removed
+    }
+
+    if ($row.data('index') !== undefined && $row.data('index') > 0) {
+        $row.find('.delete-flag').val('1');
+        $row.fadeOut(300, function() {
+            $(this).addClass('d-none');
+        });
+    } else {
+        $row.remove();
+    }
+}
+
+$('#educations-container').on('click', '.remove-education', function() {
+    removeEducationEntry(this);
+});
+
 $('#add-education').on('click', function() {
     const html = `
-        <div class="form-row align-items-end education-item mb-4 pb-3 border-bottom">
+        <div class="form-row align-items-end education-item mb-4 pb-3 border-bottom" data-index="${educationIndex}">
             <div class="form-group col-md-3">
                 <label>Establishment</label>
                 <input type="text" name="educations[${educationIndex}][establishment]" class="form-control">
@@ -203,11 +239,16 @@ $('#add-education').on('click', function() {
                 <input type="text" name="educations[${educationIndex}][grade]" class="form-control">
             </div>
 
-            <!-- Certificate Upload -->
             <div class="form-group col-md-12 mt-3">
                 <label>Attach Certificate / Proof (optional)</label>
                 <input type="file" name="educations[${educationIndex}][certificate]" class="form-control-file" accept=".jpg,.jpeg,.png,.pdf">
                 <small class="form-text text-muted">JPG, PNG, PDF. Max size: 5MB.</small>
+            </div>
+
+            <div class="form-group col-md-12 mt-3 text-right">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-education">
+                    <i class="fas fa-trash-alt"></i> Remove
+                </button>
             </div>
         </div>
     `;

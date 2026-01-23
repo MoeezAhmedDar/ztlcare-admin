@@ -223,7 +223,65 @@
                 </div>
             </div>
 
-            <!-- Right to Work in the UK - UPDATED -->
+            <!-- Other Declarations (NEW) -->
+            <div class="card mb-4">
+                <div class="card-header card-header-custom">
+                    Other Declarations
+                </div>
+                <div class="card-body">
+                    <p class="small mb-3">In addition, I also consent to work more than the maximum number of hours permitted to work at night under the directive. Please note you are under no obligation to sign either declaration.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="other_signature">Signature (Type Name) <span class="text-danger">*</span></label>
+                            <input type="text" name="other_declaration[signature]" id="other_signature" class="form-control" 
+                                   value="{{ old('other_declaration.signature', $formData['step_5']['other_declaration']['signature'] ?? '') }}">
+                            @error('other_declaration.signature')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="other_date">Date <span class="text-danger">*</span></label>
+                            <input type="date" name="other_declaration[date]" id="other_date" class="form-control" 
+                                   value="{{ old('other_declaration.date', $formData['step_5']['other_declaration']['date'] ?? date('Y-m-d')) }}">
+                            @error('other_declaration.date')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health and Safety (NEW) -->
+            <div class="card mb-4">
+                <div class="card-header card-header-custom">
+                    Health and Safety
+                </div>
+                <div class="card-body">
+                    <p class="small mb-3">Each agency worker has a responsibility at the start of their first shift to become familiar with the Client's details including medical details.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="health_safety_signature">Signature (Type Name) <span class="text-danger">*</span></label>
+                            <input type="text" name="health_safety_declaration[signature]" id="health_safety_signature" class="form-control" 
+                                   value="{{ old('health_safety_declaration.signature', $formData['step_5']['health_safety_declaration']['signature'] ?? '') }}">
+                            @error('health_safety_declaration.signature')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="health_safety_date">Date <span class="text-danger">*</span></label>
+                            <input type="date" name="health_safety_declaration[date]" id="health_safety_date" class="form-control" 
+                                   value="{{ old('health_safety_declaration.date', $formData['step_5']['health_safety_declaration']['date'] ?? date('Y-m-d')) }}">
+                            @error('health_safety_declaration.date')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right to Work in the UK -->
             <div class="card mb-4">
                 <div class="card-header card-header-custom">
                     Right to Work in the UK
@@ -239,7 +297,7 @@
                             <option value="Spouse of EU Citizen" {{ old('right_to_work_status', $formData['step_5']['right_to_work_status'] ?? '') === 'Spouse of EU Citizen' ? 'selected' : '' }}>Spouse of an EU Citizen (Visa)</option>
                             <option value="Work Permit" {{ old('right_to_work_status', $formData['step_5']['right_to_work_status'] ?? '') === 'Work Permit' ? 'selected' : '' }}>Work Permit</option>
                             <option value="Permit-free Visa" {{ old('right_to_work_status', $formData['step_5']['right_to_work_status'] ?? '') === 'Permit-free Visa' ? 'selected' : '' }}>Permit-free Visa</option>
-                            <option value="Right of Abode" {{ old('right_to_work_status', $formData['step_5']['right_to_work_status'] ?? '') === 'Right of Abode' ? 'selected' : '' }}>Right of Abode in the UK</option>
+                            <option value="Right of Abode" {{ old('right_to_work_status', $formData['step_5']['right_to_work_status'] ?? '') === 'Right of Abode' ? 'selected' : '' }}>Indefinite leave to remain in UK</option>
                             <option value="Doctor Prior to 1985" {{ old('right_to_work_status', $formData['step_5']['right_to_work_status'] ?? '') === 'Doctor Prior to 1985' ? 'selected' : '' }}>Admitted to UK as Doctor Prior to 1985</option>
                         </select>
                         @error('right_to_work_status')
@@ -247,7 +305,6 @@
                         @enderror
                     </div>
 
-                    <!-- NEW: Share Code Field -->
                     <div class="form-group">
                         <label for="right_to_work_share_code">Share Code (if applicable)</label>
                         <input type="text" name="right_to_work_share_code" id="right_to_work_share_code" class="form-control" 
@@ -259,7 +316,6 @@
                         @enderror
                     </div>
 
-                    <!-- NEW: Right to Work Proof Attachment -->
                     <div class="form-group">
                         <label for="right_to_work_proof">Upload Proof of Right to Work (optional)</label>
                         <input type="file" name="right_to_work_proof" id="right_to_work_proof" class="form-control-file" 
@@ -289,7 +345,6 @@
                 <div class="card-body">
                     <p class="small mb-3">Please answer all five questions</p>
 
-                    <!-- Your existing questions 1-5 remain unchanged -->
                     <div class="form-group">
                         <label>1. Do you have any convictions, cautions or bindovers?</label>
                         <div>
@@ -313,7 +368,8 @@
                         @enderror
                     </div>
 
-                    <!-- Questions 2-5 (unchanged - omitted for brevity in this response, but keep them as in your original code) -->
+                    <!-- Add the other 4 questions here (2–5) the same way as above -->
+                    <!-- ... your existing code for Q2–Q5 ... -->
 
                 </div>
             </div>

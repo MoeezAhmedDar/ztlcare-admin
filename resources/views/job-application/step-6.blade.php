@@ -140,37 +140,17 @@
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" id="pref_morning_mf" name="work_preferences[]" value="Morning (M-F)" 
                                        {{ in_array('Morning (M-F)', $savedPrefs) ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="pref_morning_mf">Morning (M-F)</label>
+                                <label class="custom-control-label" for="pref_morning_mf">Morning (M-S)</label>
                             </div>
                         </div>
                         <div class="col-md-4 mb-2">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" id="pref_evenings_mf" name="work_preferences[]" value="Evenings (M-F)" 
                                        {{ in_array('Evenings (M-F)', $savedPrefs) ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="pref_evenings_mf">Evenings (M-F)</label>
+                                <label class="custom-control-label" for="pref_evenings_mf">Evenings (M-S)</label>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-2">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="pref_nights_mf" name="work_preferences[]" value="Nights (M-F)" 
-                                       {{ in_array('Nights (M-F)', $savedPrefs) ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="pref_nights_mf">Nights (M-F)</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="pref_morning_ss" name="work_preferences[]" value="Morning (SAT-SUN)" 
-                                       {{ in_array('Morning (SAT-SUN)', $savedPrefs) ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="pref_morning_ss">Morning (SAT-SUN)</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="pref_evenings_ss" name="work_preferences[]" value="Evenings (SAT-SUN)" 
-                                       {{ in_array('Evenings (SAT-SUN)', $savedPrefs) ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="pref_evenings_ss">Evenings (SAT-SUN)</label>
-                            </div>
-                        </div>
+                        
                     </div>
                     @error('work_preferences')
                         <div class="text-danger small mt-1">{{ $message }}</div>

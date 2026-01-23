@@ -494,28 +494,68 @@ class JobApplicationController extends Controller
                     'sort_code' => 'nullable|string|size:6|regex:/^\d{6}$/',
                     'has_uk_license' => 'nullable|boolean',
                     'has_car' => 'nullable|boolean',
+                    'immunisations'               => 'nullable|array',
+                    'immunisations.hep_b'         => 'nullable|in:0,1',
+                    'immunisations.tb'            => 'nullable|in:0,1',
+                    'immunisations.varicella'     => 'nullable|in:0,1',
+                    'immunisations.measles'       => 'nullable|in:0,1',
+                    'immunisations.rubella'       => 'nullable|in:0,1',
+                    'immunisations.hep_b_antigen' => 'nullable|in:No Proof,Negative,Positive',
+                    'immunisations.hep_c'         => 'nullable|in:No Proof,Negative,Positive',
+                    'immunisations.hiv'           => 'nullable|in:No Proof,Negative,Positive',
                 ]);
 
             case 5:
-                
                 return $request->validate([
-                    'health_declaration' => 'nullable',
-                    'disability_declaration' => 'nullable',
-                    'confidentiality_declaration' => 'nullable',
-                    'photo_consent' => 'nullable',
-                    'personal_declaration' => 'nullable',
-                    'working_time_declaration' => 'nullable',
-                    'other_declaration' => 'nullable',
-                    'health_safety_declaration' => 'nullable|boolean',
-                    'right_to_work_status' => 'nullable',
+                    // Simple declarations (just signature/date JSON)
+                    'health_declaration' => 'nullable|array',
+                    'health_declaration.signature' => 'nullable|string|max:255',
+                    'health_declaration.date' => 'nullable|date',
+
+                    'disability_declaration' => 'nullable|array',
+                    'disability_declaration.has_disability' => 'nullable|in:0,1',
+                    'disability_declaration.signature' => 'nullable|string|max:255',
+                    'disability_declaration.date' => 'nullable|date',
+
+                    'confidentiality_declaration' => 'nullable|array',
+                    'confidentiality_declaration.signature' => 'nullable|string|max:255',
+                    'confidentiality_declaration.date' => 'nullable|date',
+
+                    'photo_consent' => 'nullable|array',
+                    'photo_consent.signature' => 'nullable|string|max:255',
+                    'photo_consent.date' => 'nullable|date',
+
+                    'personal_declaration' => 'nullable|array',
+                    'personal_declaration.signature' => 'nullable|string|max:255',
+                    'personal_declaration.date' => 'nullable|date',
+
+                    'working_time_declaration' => 'nullable|array',
+                    'working_time_declaration.signature' => 'nullable|string|max:255',
+                    'working_time_declaration.date' => 'nullable|date',
+
+                    // Other Declaration - now properly validated as array
+                    'other_declaration' => 'nullable|array',
+                    'other_declaration.signature' => 'nullable|string|max:255',
+                    'other_declaration.date' => 'nullable|date',
+
+                    // Health & Safety - if it's also JSON (signature/date), validate as array
+                    // If it's meant to be simple boolean, remove this and keep only 'boolean'
+                    'health_safety_declaration' => 'nullable|array',
+                    'health_safety_declaration.signature' => 'nullable|string|max:255',
+                    'health_safety_declaration.date' => 'nullable|date',
+
+                    // Right to Work fields
+                    'right_to_work_status' => 'nullable|string|in:EU Citizen,Spouse of EU Citizen,Work Permit,Permit-free Visa,Right of Abode,Doctor Prior to 1985',
                     'right_to_work_share_code' => 'nullable|string|max:50',
                     'right_to_work_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+
+                    // Rehabilitation questions (boolean + details)
                     'has_convictions' => 'nullable|boolean',
-                    'convictions_details' => 'nullable',
+                    'convictions_details' => 'nullable|string|max:1000|required_if:has_convictions,1',
                     'has_disciplinary' => 'nullable|boolean',
-                    'disciplinary_details' => 'nullable',
+                    'disciplinary_details' => 'nullable|string|max:1000|required_if:has_disciplinary,1',
                     'has_criminal_charges' => 'nullable|boolean',
-                    'criminal_charges_details' => 'nullable',
+                    'criminal_charges_details' => 'nullable|string|max:1000|required_if:has_criminal_charges,1',
                     'consents_police_check' => 'nullable|boolean',
                     'police_checked_recently' => 'nullable|boolean',
                     'police_check_details' => 'nullable|string|max:1000',

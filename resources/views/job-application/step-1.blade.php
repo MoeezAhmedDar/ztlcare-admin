@@ -19,8 +19,8 @@
                 <div class="text-center mb-4">
                 <h3 class="h5 mb-3 text-primary">Profile Photo</h3>
                 <div class="form-group">
-                    <label for="profile_photo">Upload Your Profile Photo (optional)</label>
-                    <input type="file" name="profile_photo" id="profile_photo" class="form-control-file mx-auto d-block" accept="image/*" style="max-width: 300px;">
+                    <label for="profile_photo">Upload Your Profile Photo (required)</label>
+                    <input type="file" required name="profile_photo" id="profile_photo" class="form-control-file mx-auto d-block" accept="image/*" style="max-width: 300px;">
                     <small class="form-text text-muted">Accepted formats: JPG, JPEG, PNG, GIF. Maximum size: 2MB.</small>
                     @error('profile_photo')
                         <div class="text-danger small">{{ $message }}</div>
