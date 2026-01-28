@@ -97,7 +97,7 @@
     <tr><td class="section-title" colspan="2">CURRENT JOB</td></tr>
     <tr>
         <td style="width:50%;">Job title: {{ $jobApplication->current_job_title }}</td>
-        <td style="width:50%;">Current Pay p/h: £{{ $jobApplication->current_pay }}</td>
+        <td style="width:50%;">Current Pay p/h: £{{ $jobApplication->current_pay_amount }}</td>
     </tr>
     <tr><td colspan="2">Duties: {{ $jobApplication->current_duties }}</td></tr>
     <tr>
@@ -198,7 +198,7 @@
         'infection_control'             => 'Infection Control',
         'lone_worker'                   => 'Lone Worker Training',
         'food_hygiene'                  => 'Food Hygiene (where required to handle food)',
-        'personal_safety_mental_health' => 'Personal Safety (Mental Health and Learning Dis.)',
+        'personal_safety' => 'Personal Safety (Mental Health and Learning Dis.)',
         'covid_19'                      => 'Covid-19',
     ];
 @endphp
@@ -776,8 +776,8 @@
 <h2>AVAILABILITY</h2>
 <table>
     <tr><td class="section-title">1. Please indicate when you would like to work. Please tick all relevant boxes.</td></tr>
-    <tr><td>Morning (M-S) {!! $box($pref('Morning (M-F)')) !!}</td></tr>
-    <tr><td>EVENINGS (M-S) {!! $box($pref('Evenings (M-F)')) !!}</td></tr>
+    <tr><td>Morning (Monday-Sunday) {!! $box($pref('Morning (M-F)')) !!}</td></tr>
+    <tr><td>EVENINGS (Monday-Sunday) {!! $box($pref('Evenings (M-F)')) !!}</td></tr>
     <!-- <tr><td>NIGHTS (M-F) {!! $box($pref('Nights (M-F)')) !!}</td></tr>
     <tr><td>Morning (SAT-SUN) {!! $box($pref('Morning (SAT-SUN)')) !!}</td></tr>
     <tr><td>EVENINGS (SAT-SUN) {!! $box($pref('Evenings (SAT-SUN)')) !!}</td></tr> -->
