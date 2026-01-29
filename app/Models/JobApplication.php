@@ -34,6 +34,8 @@ class JobApplication extends Model
         'character_reference_certificate',
         'right_to_work_share_code',
         'right_to_work_proof_path',
+        'current_employer_name',
+        'position_applying_for'
     ];
 
     protected $casts = [

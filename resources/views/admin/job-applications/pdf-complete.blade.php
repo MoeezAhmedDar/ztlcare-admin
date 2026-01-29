@@ -6,12 +6,15 @@
     <style>
         @page { margin: 18mm 14mm 26mm 14mm; }
         body { font-family: "DejaVu Sans", sans-serif; font-size: 12px; color: #000; line-height: 1.3; }
-        h1 { margin: 10px 0 12px 0; font-size: 18px; text-align: center; font-weight: bold; }
+        h1 { margin: 10px 0 4px 0; font-size: 18px; text-align: center; font-weight: bold; }
+        .job-title { font-size: 15px; color: #006699; text-align: center; margin: 0 0 12px 0; font-weight: bold; }
         h2 { margin: 8px 0 6px 0; font-size: 14px; text-align: center; font-weight: bold; }
         .header { display: table; width: 100%; margin-bottom: 8px; }
         .header-left { display: table-cell; vertical-align: top; width: 55%; font-size: 12px; line-height: 1.3; font-weight: normal; }
         .header-right { display: table-cell; text-align: right; vertical-align: top; }
         .header-right img { width: 165px; }
+        .profile-photo-container { text-align: center; margin: 12px 0 18px 0; }
+        .profile-photo { max-width: 140px; max-height: 180px; border: 2px solid #7fb7cf; border-radius: 6px; object-fit: cover; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 6px; }
         .section-title { background: #62c2dd; color: #fff; font-weight: bold; padding: 4px 7px; text-transform: uppercase; font-size: 12px; }
         th, td { border: 1px solid #7fb7cf; padding: 4px 7px; vertical-align: top; font-size: 12px; font-weight: normal; }
@@ -21,8 +24,6 @@
         .instruction { font-size: 9px; font-style: italic; text-align: center; margin: 4px 0; }
         ul { margin: 3px 0; padding-left: 12px; font-size: 10px; list-style: none; }
         ul li { margin-bottom: 3px; }
-        .checklist-box { border: 1px solid #7fb7cf; padding: 10px 12px; margin-bottom: 8px; }
-        .checklist-box .instruction { text-align: left; margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -35,90 +36,145 @@
     $logoExists = file_exists($logoPath);
 @endphp
 
-{{-- PAGE 1 --}}
+<!-- PAGE 1 -->
 <div class="header">
-    <div class="header-left">358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA<br>T: 01698 701199<br>E: info@ztl.care&nbsp;&nbsp;W: www.ztl.care</div>
-    <div class="header-right">@if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif</div>
+    <div class="header-left">
+        358 Brandon Street Motherwell<br>
+        North Lanarkshire ML1 1XA<br>
+        T: 01698 701199<br>
+        E: info@ztl.care&nbsp;&nbsp;W: www.ztl.care
+    </div>
+    <div class="header-right">
+        @if($logoExists)
+            <img src="{{ $logoPath }}" alt="ZTL Care Logo">
+        @endif
+    </div>
 </div>
+
+<div class="profile-photo-container">
+    @if ($jobApplication->profile_photo && file_exists(public_path($jobApplication->profile_photo)))
+        <img src="{{ public_path($jobApplication->profile_photo) }}" 
+             alt="Applicant Profile Photo" 
+             class="profile-photo">
+    @else
+        <div style="font-style:italic; color:#666; font-size:11px;">
+            No profile photo uploaded
+        </div>
+    @endif
+</div>
+
 <h1>Job Application Form</h1>
+<h2 class="job-title">
+    Position Applying For: {{ $jobApplication->position_applying_for ?? 'Not specified' }}
+</h2>
+
 <table>
     <tr><td class="section-title" colspan="2">PERSONAL DETAILS</td></tr>
     <tr>
-        <td style="width:50%;">Title: {{ $jobApplication->title }}</td>
+        <td style="width:50%;">Title: {{ $jobApplication->title ?? '—' }}</td>
         <td style="width:50%;">Date of birth: {{ $formatDate($jobApplication->date_of_birth) }}</td>
     </tr>
     <tr><td colspan="2">Forename: {{ $jobApplication->forename }}</td></tr>
     <tr><td colspan="2">Surname: {{ $jobApplication->surname }}</td></tr>
-    <tr><td colspan="2">Previous Name: {{ $jobApplication->previous_name }}</td></tr>
+    <tr><td colspan="2">Previous Name: {{ $jobApplication->previous_name ?? '—' }}</td></tr>
     <tr>
-        <td>Gender: {{ $jobApplication->gender }}</td>
-        <td>Marital status: {{ $jobApplication->marital_status }}</td>
+        <td>Gender: {{ $jobApplication->gender ?? '—' }}</td>
+        <td>Marital status: {{ $jobApplication->marital_status ?? '—' }}</td>
     </tr>
-    <tr><td colspan="2">NI Number: {{ $jobApplication->ni_number }}</td></tr>
+    <tr><td colspan="2">NI Number: {{ $jobApplication->ni_number ?? '—' }}</td></tr>
 </table>
+
 <table>
     <tr><td class="section-title" colspan="2">ADDRESS</td></tr>
-    <tr><td colspan="2" style="min-height:30px;">Address: {{ $jobApplication->address }}</td></tr>
-    <tr><td colspan="2">Postcode: {{ $jobApplication->postcode }}</td></tr>
+    <tr><td colspan="2" style="min-height:30px;">Address: {{ $jobApplication->address ?? '—' }}</td></tr>
+    <tr><td colspan="2">Postcode: {{ $jobApplication->postcode ?? '—' }}</td></tr>
 </table>
+
 <table>
     <tr><td class="section-title" colspan="2">WAYS TO CONTACT YOU</td></tr>
     <tr>
-        <td style="width:50%;">Mobile Number: {{ $jobApplication->mobile_number }}</td>
-        <td style="width:50%;">Landline: {{ $jobApplication->landline }}</td>
+        <td style="width:50%;">Mobile Number: {{ $jobApplication->mobile_number ?? '—' }}</td>
+        <td style="width:50%;">Landline: {{ $jobApplication->landline ?? '—' }}</td>
     </tr>
-    <tr><td colspan="2">Email: {{ $jobApplication->email }}</td></tr>
+    <tr><td colspan="2">Email: {{ $jobApplication->email ?? '—' }}</td></tr>
 </table>
+
 <table>
     <tr><td class="section-title" colspan="2">EMERGENCY CONTACT</td></tr>
-    <tr><td colspan="2">Next of Kin: {{ $jobApplication->next_of_kin_name }}</td></tr>
-    <tr><td colspan="2">Name: {{ $jobApplication->next_of_kin_name }}</td></tr>
+    <tr><td colspan="2">Next of Kin: {{ $jobApplication->next_of_kin_name ?? '—' }}</td></tr>
     <tr>
-        <td style="width:50%;">Relationship: {{ $jobApplication->next_of_kin_relationship }}</td>
-        <td style="width:50%;">Phone: {{ $jobApplication->next_of_kin_phone }}</td>
+        <td style="width:50%;">Relationship: {{ $jobApplication->next_of_kin_relationship ?? '—' }}</td>
+        <td style="width:50%;">Phone: {{ $jobApplication->next_of_kin_phone ?? '—' }}</td>
     </tr>
-    <tr><td colspan="2">Address: {{ $jobApplication->next_of_kin_address }}</td></tr>
+    <tr><td colspan="2">Address: {{ $jobApplication->next_of_kin_address ?? '—' }}</td></tr>
     <tr>
-        <td style="width:50%;">Postcode: {{ $jobApplication->next_of_kin_postcode }}</td>
-        <td style="width:50%;">Email: {{ $jobApplication->next_of_kin_email }}</td>
+        <td style="width:50%;">Postcode: {{ $jobApplication->next_of_kin_postcode ?? '—' }}</td>
+        <td style="width:50%;">Email: {{ $jobApplication->next_of_kin_email ?? '—' }}</td>
     </tr>
 </table>
+
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
 <div class="page-break"></div>
 
-{{-- PAGE 2 --}}
+<!-- PAGE 2 - WORK HISTORY -->
 <div class="header">
-    <div class="header-left">358 Brandon Street Motherwell<br>North Lanarkshire ML1 1XA<br>T: 01698 701199<br>E: info@ztl.care&nbsp;&nbsp;W: www.ztl.care</div>
-    <div class="header-right">@if($logoExists)<img src="{{ $logoPath }}" alt="ZTL Care Logo">@endif</div>
+    <div class="header-left">
+        358 Brandon Street Motherwell<br>
+        North Lanarkshire ML1 1XA<br>
+        T: 01698 701199<br>
+        E: info@ztl.care&nbsp;&nbsp;W: www.ztl.care
+    </div>
+    <div class="header-right">
+        @if($logoExists)
+            <img src="{{ $logoPath }}" alt="ZTL Care Logo">
+        @endif
+    </div>
 </div>
+
 <h2>WORK HISTORY</h2>
-<p class="instruction">Please ensure you complete this section even if you have a CV. Please ensure that you leave no gaps unaccounted for and it covers 10 years.</p>
+<p class="instruction">Please ensure you complete this section even if you have a CV. Please ensure that you leave no gaps unaccounted for and it covers 5 years.</p>
+
 <table>
     <tr><td class="section-title" colspan="2">CURRENT JOB</td></tr>
     <tr>
-        <td style="width:50%;">Job title: {{ $jobApplication->current_job_title }}</td>
-        <td style="width:50%;">Current Pay p/h: £{{ $jobApplication->current_pay_amount }}</td>
+        <td style="width:50%;">Job title: {{ $jobApplication->current_job_title ?? '—' }}</td>
+        <td style="width:50%;">
+            Current Pay: 
+            @if($jobApplication->current_pay_amount)
+                £{{ number_format($jobApplication->current_pay_amount, 2) }} 
+                per {{ $jobApplication->current_pay_frequency ?? '—' }}
+            @else
+                —
+            @endif
+        </td>
     </tr>
-    <tr><td colspan="2">Duties: {{ $jobApplication->current_duties }}</td></tr>
     <tr>
-        <td>Current Place of Work: {{ $jobApplication->current_place_of_work }}</td>
-        <td>Day/Night Shift: {{ $jobApplication->current_shift_type }}</td>
+        <td>Started: {{ $jobApplication->current_from_date }}</td>
+        <td>Ended: {{ $jobApplication->current_to_date ? $jobApplication->current_to_date : 'Present' }}</td>
+    </tr>
+    <tr><td colspan="2">Employer: {{ $jobApplication->current_employer_name ?? '—' }}</td></tr>
+    <tr><td colspan="2">Duties: {{ $jobApplication->current_duties ?? '—' }}</td></tr>
+    <tr>
+        <td>Current Place of Work: {{ $jobApplication->current_place_of_work ?? '—' }}</td>
+        <td>Day/Night Shift: {{ $jobApplication->current_shift_type ?? '—' }}</td>
     </tr>
 </table>
+
 @foreach($jobApplication->workHistories as $h)
     <table>
         <tr><td class="section-title" colspan="2">PREVIOUS JOB</td></tr>
         <tr>
-            <td style="width:50%;">From: {{ optional($h->from_date)->format('m/Y') }}</td>
-            <td style="width:50%;">To: {{ optional($h->to_date)->format('m/Y') }}</td>
+            <td style="width:50%;">From: {{ optional($h->from_date)->format('m/Y') ?? '—' }}</td>
+            <td style="width:50%;">To: {{ optional($h->to_date)->format('m/Y') ?? 'Present' }}</td>
         </tr>
-        <tr><td colspan="2">Name of Employer: {{ $h->employer_name ?? '' }}</td></tr>
-        <tr><td colspan="2">Job Title: {{ $h->job_title ?? '' }}</td></tr>
-        <tr><td colspan="2">Main Responsibilities: {{ $h->main_responsibilities ?? '' }}</td></tr>
-        <tr><td colspan="2">Address: {{ $h->employer_address ?? '' }}</td></tr>
-        <tr><td colspan="2">Reason for Leaving: {{ $h->reason_for_leaving ?? '' }}</td></tr>
+        <tr><td colspan="2">Name of Employer: {{ $h->employer_name ?? '—' }}</td></tr>
+        <tr><td colspan="2">Job Title: {{ $h->job_title ?? '—' }}</td></tr>
+        <tr><td colspan="2">Main Responsibilities: {{ $h->main_responsibilities ?? '—' }}</td></tr>
+        <tr><td colspan="2">Address: {{ $h->employer_address ?? '—' }}</td></tr>
+        <tr><td colspan="2">Reason for Leaving: {{ $h->reason_for_leaving ?? '—' }}</td></tr>
     </table>
 @endforeach
+
 <div class="footer">ZAN Traders Ltd - Company Registration Number: <strong>SC675141</strong></div>
 <div class="page-break"></div>
 

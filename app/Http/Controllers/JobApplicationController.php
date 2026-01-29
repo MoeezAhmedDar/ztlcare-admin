@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Session;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
 
 class JobApplicationController extends Controller
 {
@@ -29,7 +30,7 @@ class JobApplicationController extends Controller
         }
 
         $formData = Session::get('job_application_form', []);
-        
+
         return view('job-application.step-' . $step, [
             'step' => $step,
             'steps' => $this->steps,
@@ -43,78 +44,100 @@ class JobApplicationController extends Controller
 
         $formData = Session::get('job_application_form', []);
 
-        // Step 1: Profile Photo
+        // Step 1: Profile Photo - save directly to public/uploads
         if ($step === 1) {
             if ($request->hasFile('profile_photo') && $request->file('profile_photo')->isValid()) {
                 $file = $request->file('profile_photo');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('tmp/profile_photos', $filename, 'public');
-                $validated['profile_photo'] = $path;
+                $destination = public_path('uploads/profile_photos');
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+                $file->move($destination, $filename);
+                $validated['profile_photo'] = 'uploads/profile_photos/' . $filename;
             } elseif (isset($formData['step_1']['profile_photo'])) {
                 $validated['profile_photo'] = $formData['step_1']['profile_photo'];
             }
         }
 
-        // Step 3: Education Certificates
+        // Step 3: Education Certificates - save directly to public/uploads
         if ($step === 3) {
-            $educations = $validated['educations'] ?? [];
+            $educations = $request->input('educations', []);
 
-            foreach ($educations as $index => &$education) {
-                if (isset($education['certificate']) && $education['certificate'] instanceof \Illuminate\Http\UploadedFile) {
-                    unset($education['certificate']);
+            // Merge previous paths from session
+            if (isset($formData['step_3']['educations'])) {
+                foreach ($formData['step_3']['educations'] as $idx => $prev) {
+                    if (!isset($educations[$idx])) {
+                        $educations[$idx] = $prev;
+                    } elseif (!isset($educations[$idx]['certificate'])) {
+                        $educations[$idx]['certificate'] = $prev['certificate'] ?? null;
+                    }
                 }
             }
-            unset($education);
 
-            $uploadedFiles = $request->file('educations');
-            if (!empty($uploadedFiles)) {
-                foreach ($uploadedFiles as $index => $files) {
-                    if (isset($files['certificate']) && $files['certificate'] && $files['certificate']->isValid()) {
-                        $file = $files['certificate'];
-                        $filename = time() . '_' . $index . '_' . $file->getClientOriginalName();
-                        $path = $file->storeAs('tmp/education_certificates', $filename, 'public');
-                        $educations[$index]['certificate'] = $path;
-                    } elseif (isset($formData['step_3']['educations'][$index]['certificate'])) {
-                        $educations[$index]['certificate'] = $formData['step_3']['educations'][$index]['certificate'];
+            // Handle new certificate uploads
+            $uploadedFiles = $request->file('educations', []);
+            foreach ($uploadedFiles as $index => $files) {
+                if (isset($files['certificate']) && $files['certificate'] instanceof \Illuminate\Http\UploadedFile && $files['certificate']->isValid()) {
+                    $file = $files['certificate'];
+                    $filename = time() . '_' . $index . '_' . $file->getClientOriginalName();
+                    $destination = public_path('uploads/education_certificates');
+                    if (!file_exists($destination)) {
+                        mkdir($destination, 0755, true);
                     }
+                    $file->move($destination, $filename);
+                    $educations[$index]['certificate'] = 'uploads/education_certificates/' . $filename;
                 }
             }
 
             $validated['educations'] = $educations;
         }
 
-        // Step 4: Registration Certificate
+        // Step 4: Registration Certificate - save directly to public/uploads
         if ($step === 4) {
-            if (isset($validated['registration_certificate']) && $validated['registration_certificate'] instanceof \Illuminate\Http\UploadedFile) {
-                unset($validated['registration_certificate']);
-            }
-
             if ($request->hasFile('registration_certificate') && $request->file('registration_certificate')->isValid()) {
                 $file = $request->file('registration_certificate');
                 $filename = time() . '_reg_' . $file->getClientOriginalName();
-                $path = $file->storeAs('tmp/registration_certificates', $filename, 'public');
-                $validated['registration_certificate_path'] = $path;
+                $destination = public_path('uploads/registration_certificates');
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+                $file->move($destination, $filename);
+                $validated['registration_certificate_path'] = 'uploads/registration_certificates/' . $filename;
             } elseif (isset($formData['step_4']['registration_certificate_path'])) {
                 $validated['registration_certificate_path'] = $formData['step_4']['registration_certificate_path'];
             }
         }
 
-        // Step 5: Right to Work Proof Upload
+        // Step 5: Right to Work Proof - save directly to public/uploads
         if ($step === 5) {
-            // Remove injected UploadedFile object
-            if (isset($validated['right_to_work_proof']) && $validated['right_to_work_proof'] instanceof \Illuminate\Http\UploadedFile) {
-                unset($validated['right_to_work_proof']);
-            }
-
-            // Handle new upload
             if ($request->hasFile('right_to_work_proof') && $request->file('right_to_work_proof')->isValid()) {
                 $file = $request->file('right_to_work_proof');
                 $filename = time() . '_rtw_' . $file->getClientOriginalName();
-                $path = $file->storeAs('tmp/right_to_work', $filename, 'public');
-                $validated['right_to_work_proof_path'] = $path;
+                $destination = public_path('uploads/right_to_work_proofs');
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+                $file->move($destination, $filename);
+                $validated['right_to_work_proof_path'] = 'uploads/right_to_work_proofs/' . $filename;
             } elseif (isset($formData['step_5']['right_to_work_proof_path'])) {
                 $validated['right_to_work_proof_path'] = $formData['step_5']['right_to_work_proof_path'];
             }
+        }
+
+        // Safety check - make sure no UploadedFile objects remain
+        $hasFile = false;
+        array_walk_recursive($validated, function ($value) use (&$hasFile) {
+            if ($value instanceof \Illuminate\Http\UploadedFile) {
+                $hasFile = true;
+            }
+        });
+
+        if ($hasFile) {
+            \Log::error('UploadedFile object still present in validated data for step ' . $step, [
+                'validated_keys' => array_keys($validated)
+            ]);
+            return redirect()->back()->with('error', 'File processing error. Please try again.');
         }
 
         // Save to session
@@ -128,11 +151,10 @@ class JobApplicationController extends Controller
         return redirect()->route('job-application.review');
     }
 
-
     public function review()
     {
         $formData = Session::get('job_application_form', []);
-        
+
         if (empty($formData)) {
             return redirect()->route('job-application.step', 1);
         }
@@ -146,7 +168,7 @@ class JobApplicationController extends Controller
     public function submit(Request $request)
     {
         $formData = Session::get('job_application_form', []);
-        
+
         if (empty($formData)) {
             return redirect()->route('job-application.step', 1)
                 ->with('error', 'Session expired. Please start again.');
@@ -160,38 +182,10 @@ class JobApplicationController extends Controller
             $step5 = $formData['step_5'] ?? [];
             $step6 = $formData['step_6'] ?? [];
 
-            // Handle Profile Photo (Step 1)
-            $profilePhotoPath = null;
-            if (!empty($step1['profile_photo'])) {
-                $tmpFullPath = storage_path('app/public/' . $step1['profile_photo']);
-                if (file_exists($tmpFullPath)) {
-                    $finalPath = 'profile_photos/' . basename($step1['profile_photo']);
-                    Storage::disk('public')->move($step1['profile_photo'], $finalPath);
-                    $profilePhotoPath = $finalPath;
-                }
-            }
-
-            // Handle Registration Certificate (Step 4)
-            $registrationCertPath = null;
-            if (!empty($step4['registration_certificate_path'])) {
-                $tmpFullPath = storage_path('app/public/' . $step4['registration_certificate_path']);
-                if (file_exists($tmpFullPath)) {
-                    $finalPath = 'registration_certificates/' . basename($step4['registration_certificate_path']);
-                    Storage::disk('public')->move($step4['registration_certificate_path'], $finalPath);
-                    $registrationCertPath = $finalPath;
-                }
-            }
-
-            // Handle Right to Work Proof (Step 5)
-            $rtwProofPath = null;
-            if (!empty($step5['right_to_work_proof_path'])) {
-                $tmpFullPath = storage_path('app/public/' . $step5['right_to_work_proof_path']);
-                if (file_exists($tmpFullPath)) {
-                    $finalPath = 'right_to_work_proofs/' . basename($step5['right_to_work_proof_path']);
-                    Storage::disk('public')->move($step5['right_to_work_proof_path'], $finalPath);
-                    $rtwProofPath = $finalPath;
-                }
-            }
+            // Paths are already final (uploads/...) — no move needed!
+            $profilePhotoPath = $step1['profile_photo'] ?? null;
+            $registrationCertPath = $step4['registration_certificate_path'] ?? null;
+            $rtwProofPath = $step5['right_to_work_proof_path'] ?? null;
 
             // Create main application record
             $application = JobApplication::create([
@@ -210,15 +204,17 @@ class JobApplicationController extends Controller
                 'mobile_number' => $step1['mobile_number'] ?? null,
                 'landline' => $step1['landline'] ?? null,
                 'email' => $step1['email'] ?? null,
+                'position_applying_for' => $step1['position_applying_for'] ?? null,
                 'next_of_kin_name' => $step1['next_of_kin_name'] ?? null,
                 'next_of_kin_relationship' => $step1['next_of_kin_relationship'] ?? null,
                 'next_of_kin_phone' => $step1['next_of_kin_phone'] ?? null,
                 'next_of_kin_address' => $step1['next_of_kin_address'] ?? null,
                 'next_of_kin_postcode' => $step1['next_of_kin_postcode'] ?? null,
                 'next_of_kin_email' => $step1['next_of_kin_email'] ?? null,
-                
+
                 // Step 2: Current Job
                 'current_job_title'     => $step2['current_job_title'] ?? null,
+                'current_employer_name'     => $step2['current_employer_name'] ?? null,
                 'current_pay_amount'    => $step2['current_pay_amount'] ?? null,
                 'current_pay_frequency' => $step2['current_pay_frequency'] ?? null,
                 'current_duties'        => $step2['current_duties'] ?? null,
@@ -226,7 +222,7 @@ class JobApplicationController extends Controller
                 'current_shift_type'    => $step2['current_shift_type'] ?? null,
                 'current_from_date'     => $step2['current_from_date'] ?? null,
                 'current_to_date'       => $step2['current_to_date'] ?? null,
-                
+
                 // Step 4: Professional & Payment + Registration Certificate
                 'professional_body'           => $step4['professional_body'] ?? null,
                 'pin'                         => $step4['pin'] ?? null,
@@ -245,7 +241,7 @@ class JobApplicationController extends Controller
                 'sort_code'                   => $step4['sort_code'] ?? null,
                 'has_uk_license'              => $step4['has_uk_license'] ?? null,
                 'has_car'                     => $step4['has_car'] ?? null,
-                
+
                 // Step 5: Declarations + Right to Work Fields
                 'health_declaration'         => $step5['health_declaration'] ?? null,
                 'disability_declaration'     => $step5['disability_declaration'] ?? null,
@@ -256,8 +252,8 @@ class JobApplicationController extends Controller
                 'other_declaration'          => $step5['other_declaration'] ?? null,
                 'health_safety_declaration'  => $step5['health_safety_declaration'] ?? null,
                 'right_to_work_status'       => $step5['right_to_work_status'] ?? null,
-                'right_to_work_share_code'   => $step5['right_to_work_share_code'] ?? null,        // ← NEW
-                'right_to_work_proof_path'   => $rtwProofPath,                                      // ← NEW
+                'right_to_work_share_code'   => $step5['right_to_work_share_code'] ?? null,
+                'right_to_work_proof_path'   => $rtwProofPath,
                 'has_convictions'            => $step5['has_convictions'] ?? null,
                 'convictions_details'        => $step5['convictions_details'] ?? null,
                 'has_disciplinary'           => $step5['has_disciplinary'] ?? null,
@@ -267,7 +263,7 @@ class JobApplicationController extends Controller
                 'consents_police_check'      => $step5['consents_police_check'] ?? null,
                 'police_checked_recently'    => $step5['police_checked_recently'] ?? null,
                 'police_check_details'       => $step5['police_check_details'] ?? null,
-                
+
                 // Step 6: Availability + Character Reference Certificate
                 'work_preferences'              => $step6['work_preferences'] ?? null,
                 'availability_other'            => $step6['availability_other'] ?? null,
@@ -276,7 +272,7 @@ class JobApplicationController extends Controller
                 'has_holidays_booked'           => $step6['has_holidays_booked'] ?? null,
                 'holidays_dates'                => $step6['holidays_dates'] ?? null,
                 'character_reference_certificate' => $step6['character_reference_certificate'] ?? null,
-                
+
                 'status' => 'pending',
             ]);
 
@@ -298,31 +294,22 @@ class JobApplicationController extends Controller
                 }
             }
 
-            // Step 3: Educations + Certificate Handling
+            // Step 3: Educations + Certificate Handling (paths already final!)
             if (!empty($step3['educations'])) {
                 foreach ($step3['educations'] as $index => $educationData) {
                     if (empty(array_filter($educationData, fn($v) => $v !== null && $v !== ''))) {
                         continue;
                     }
 
-                    $education = $application->educations()->create([
+                    $application->educations()->create([
                         'establishment'   => $educationData['establishment'] ?? null,
                         'from_date'       => $educationData['from_date'] ?? null,
                         'to_date'         => $educationData['to_date'] ?? null,
                         'qualification'   => $educationData['qualification'] ?? null,
                         'grade'           => $educationData['grade'] ?? null,
                         'display_order'   => $index + 1,
-                        'certificate_path' => null,
+                        'certificate_path' => $educationData['certificate'] ?? null, // ← already 'uploads/education_certificates/...'
                     ]);
-
-                    if (!empty($educationData['certificate'])) {
-                        $tmpFullPath = storage_path('app/public/' . $educationData['certificate']);
-                        if (file_exists($tmpFullPath)) {
-                            $finalPath = 'education_certificates/' . basename($educationData['certificate']);
-                            Storage::disk('public')->move($educationData['certificate'], $finalPath);
-                            $education->update(['certificate_path' => $finalPath]);
-                        }
-                    }
                 }
             }
 
@@ -380,35 +367,12 @@ class JobApplicationController extends Controller
             }
         });
 
-        // Cleanup temporary files
-        if (isset($formData['step_1']['profile_photo'])) {
-            Storage::disk('public')->delete($formData['step_1']['profile_photo']);
-        }
-
-        // Cleanup temporary education certificates
-        if (!empty($formData['step_3']['educations'])) {
-            foreach ($formData['step_3']['educations'] as $educationData) {
-                if (!empty($educationData['certificate'])) {
-                    Storage::disk('public')->delete($educationData['certificate']);
-                }
-            }
-        }
-
-        // Cleanup temporary registration certificate
-        if (isset($formData['step_4']['registration_certificate_path'])) {
-            Storage::disk('public')->delete($formData['step_4']['registration_certificate_path']);
-        }
-
-        // Cleanup temporary right to work proof
-        if (isset($formData['step_5']['right_to_work_proof_path'])) {
-            Storage::disk('public')->delete($formData['step_5']['right_to_work_proof_path']);
-        }
+        // No tmp cleanup needed anymore - files are already in final location
 
         Session::forget('job_application_form');
 
         return redirect()->route('job-application.success');
     }
-
     public function success()
     {
         return view('job-application.success');
@@ -419,8 +383,8 @@ class JobApplicationController extends Controller
         switch ($step) {
             case 1:
                 return $request->validate([
-                    'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048', // 2MB max
                     'title' => 'nullable|in:Mr,Mrs,Miss,Ms,Dr,Other',
+                    'position_applying_for' => 'required|string|in:Care Assistant,Healthcare Assistant (HCA),Support Worker,Care Worker,Healthcare Support Worker',
                     'date_of_birth' => 'required|date|before_or_equal:today',
                     'forename' => 'required|string|max:255',
                     'surname' => 'required|string|max:255',
@@ -432,7 +396,7 @@ class JobApplicationController extends Controller
                     'postcode' => 'required|string|max:10',
                     'mobile_number' => 'required|string|max:20|regex:/^[\d\s\-\+()]+$/',
                     'landline' => 'nullable|string|max:20|regex:/^[\d\s\-\+()]+$/',
-                    'email' => 'required|email|max:255|unique:job_applications,email', // Optional: prevent duplicate apps
+                    'email' => 'required|email|max:255|unique:job_applications,email',
                     'next_of_kin_name' => 'nullable|string|max:255',
                     'next_of_kin_relationship' => 'nullable|string|max:100',
                     'next_of_kin_phone' => 'nullable|string|max:20|regex:/^[\d\s\-\+()]+$/',
@@ -443,41 +407,42 @@ class JobApplicationController extends Controller
 
             case 2:
                 return $request->validate([
-                    'current_job_title' => 'required|string',
-                    'current_pay_amount' => 'required|numeric',
-                    'current_pay_frequency' => 'required|in:hour,week,month',
-                    'current_from_date' => 'required|date|before_or_equal:today',
-                    'current_to_date' => 'nullable|date|after_or_equal:current_from_date',
-                    'current_duties' => 'required|string',
-                    'current_place_of_work' => 'required|string',
-                    'current_shift_type' => 'nullable|in:Day,Night,Both',
-                    'work_histories' => 'nullable|array',
-                    'work_histories.*.from_date' => 'required_with:work_histories|date',
-                    'work_histories.*.to_date' => 'required_with:work_histories|date|after:work_histories.*.from_date',
-                    'work_histories.*.employer_name' => 'required_with:work_histories|string',
-                    'work_histories.*.job_title' => 'required_with:work_histories|string',
+                    'current_job_title'       => 'required|string|max:255',
+                    'current_employer_name'   => 'required|string|max:255',
+                    'current_pay_amount'      => 'nullable|numeric',
+                    'current_pay_frequency'   => 'nullable|in:hour,week,month,year',
+                    'current_from_date'       => 'required|date|before_or_equal:today',
+                    'current_to_date'         => 'nullable|date|after_or_equal:current_from_date',
+                    'current_duties'          => 'required|string',
+                    'current_place_of_work'   => 'nullable|string|max:500',
+                    'current_shift_type'      => 'nullable|in:Day,Night,Both',
+
+                    'work_histories'                    => 'nullable|array',
+                    'work_histories.*.from_date'        => 'required_with:work_histories|date',
+                    'work_histories.*.to_date'          => 'required_with:work_histories|date|after:work_histories.*.from_date',
+                    'work_histories.*.employer_name'    => 'required_with:work_histories|string|max:255',
+                    'work_histories.*.job_title'        => 'required_with:work_histories|string|max:255',
                     'work_histories.*.main_responsibilities' => 'required_with:work_histories|string',
-                    'work_histories.*.employer_address' => 'nullable|string',
-                    'work_histories.*.reason_for_leaving' => 'nullable|string',
+                    'work_histories.*.employer_address' => 'nullable|string|max:500',
+                    'work_histories.*.reason_for_leaving' => 'nullable|string|max:500',
                 ]);
 
             case 3:
                 return $request->validate([
                     'educations' => 'nullable|array',
                     'educations.*.establishment' => 'required_with:educations|string|max:255',
-                    'educations.*.from_date' => 'required_with:educations|string|size:4|regex:/^\d{4}$/',
-                    'educations.*.to_date' => 'required_with:educations|string|size:4|regex:/^\d{4}$/',
+                    'educations.*.from_date'     => 'required_with:educations|string|size:4|regex:/^\d{4}$/',
+                    'educations.*.to_date'       => 'required_with:educations|string|size:4|regex:/^\d{4}$/',
                     'educations.*.qualification' => 'required_with:educations|string|max:255',
-                    'educations.*.grade' => 'nullable|string|max:50',
-                    'educations.*.certificate' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120', // 5MB
-                    'mandatory_training' => 'nullable|array',
-                    'mandatory_training.*' => 'in:moving_handling,basic_life_support,intermediate_life_support,advance_life_support,complaints_handling,handling_violence,fire_safety,coshh,riddor,caldicott_protocols,data_protection,infection_control,lone_worker,food_hygiene,personal_safety,covid_19',
-                    'other_training' => 'nullable|string|max:2000',
+                    'educations.*.grade'         => 'nullable|string|max:50',
+                    'mandatory_training'         => 'nullable|array',
+                    'mandatory_training.*'       => 'in:moving_handling,basic_life_support,intermediate_life_support,advance_life_support,complaints_handling,handling_violence,fire_safety,coshh,riddor,caldicott_protocols,data_protection,infection_control,lone_worker,food_hygiene,personal_safety,covid_19',
+                    'other_training'             => 'nullable|string|max:2000',
                 ]);
 
-            case 4:
+             case 4:
                 return $request->validate([
-                    'registration_certificate' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+                    // File handling moved to storeStep() - no rule here
                     'professional_body' => 'nullable|string|max:255',
                     'pin' => 'nullable|string|max:50',
                     'renewal_date' => 'nullable|date|after_or_equal:today',
@@ -494,20 +459,20 @@ class JobApplicationController extends Controller
                     'sort_code' => 'nullable|string|size:6|regex:/^\d{6}$/',
                     'has_uk_license' => 'nullable|boolean',
                     'has_car' => 'nullable|boolean',
-                    'immunisations'               => 'nullable|array',
-                    'immunisations.hep_b'         => 'nullable|in:0,1',
-                    'immunisations.tb'            => 'nullable|in:0,1',
-                    'immunisations.varicella'     => 'nullable|in:0,1',
-                    'immunisations.measles'       => 'nullable|in:0,1',
-                    'immunisations.rubella'       => 'nullable|in:0,1',
+                    'immunisations' => 'nullable|array',
+                    'immunisations.hep_b' => 'nullable|in:0,1',
+                    'immunisations.tb' => 'nullable|in:0,1',
+                    'immunisations.varicella' => 'nullable|in:0,1',
+                    'immunisations.measles' => 'nullable|in:0,1',
+                    'immunisations.rubella' => 'nullable|in:0,1',
                     'immunisations.hep_b_antigen' => 'nullable|in:No Proof,Negative,Positive',
-                    'immunisations.hep_c'         => 'nullable|in:No Proof,Negative,Positive',
-                    'immunisations.hiv'           => 'nullable|in:No Proof,Negative,Positive',
+                    'immunisations.hep_c' => 'nullable|in:No Proof,Negative,Positive',
+                    'immunisations.hiv' => 'nullable|in:No Proof,Negative,Positive',
                 ]);
 
             case 5:
                 return $request->validate([
-                    // Simple declarations (just signature/date JSON)
+                    // All declarations (JSON arrays)
                     'health_declaration' => 'nullable|array',
                     'health_declaration.signature' => 'nullable|string|max:255',
                     'health_declaration.date' => 'nullable|date',
@@ -533,23 +498,19 @@ class JobApplicationController extends Controller
                     'working_time_declaration.signature' => 'nullable|string|max:255',
                     'working_time_declaration.date' => 'nullable|date',
 
-                    // Other Declaration - now properly validated as array
                     'other_declaration' => 'nullable|array',
                     'other_declaration.signature' => 'nullable|string|max:255',
                     'other_declaration.date' => 'nullable|date',
 
-                    // Health & Safety - if it's also JSON (signature/date), validate as array
-                    // If it's meant to be simple boolean, remove this and keep only 'boolean'
                     'health_safety_declaration' => 'nullable|array',
                     'health_safety_declaration.signature' => 'nullable|string|max:255',
                     'health_safety_declaration.date' => 'nullable|date',
 
-                    // Right to Work fields
+                    // Right to Work non-file fields
                     'right_to_work_status' => 'nullable|string|in:EU Citizen,Spouse of EU Citizen,Work Permit,Permit-free Visa,Right of Abode,Doctor Prior to 1985',
                     'right_to_work_share_code' => 'nullable|string|max:50',
-                    'right_to_work_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
 
-                    // Rehabilitation questions (boolean + details)
+                    // Rehabilitation
                     'has_convictions' => 'nullable|boolean',
                     'convictions_details' => 'nullable|string|max:1000|required_if:has_convictions,1',
                     'has_disciplinary' => 'nullable|boolean',
@@ -571,7 +532,7 @@ class JobApplicationController extends Controller
                     'interview_availability' => 'nullable|string|max:500',
                     'has_holidays_booked' => 'nullable|boolean',
                     'holidays_dates' => 'required_if:has_holidays_booked,true|string|max:500',
-                    'references' => 'nullable|array|min:2|max:3', // Require at least 2 references
+                    'references' => 'nullable|array|min:2|max:3',
                     'references.*.name' => 'required_with:references|string|max:255',
                     'references.*.position' => 'required_with:references|string|max:255',
                     'references.*.company_address' => 'nullable|string|max:500',
@@ -582,7 +543,6 @@ class JobApplicationController extends Controller
                     'referrals.*.name' => 'required_with:referrals|string|max:255',
                     'referrals.*.telephone' => 'required_with:referrals|string|max:20',
                 ]);
-
             default:
                 return [];
         }
@@ -592,7 +552,7 @@ class JobApplicationController extends Controller
     public function index()
     {
         $applications = JobApplication::latest()->paginate(20);
-        
+
         return view('admin.job-applications.index', compact('applications'));
     }
 
@@ -606,7 +566,7 @@ class JobApplicationController extends Controller
             'references',
             'referrals',
         ]);
-        
+
         return view('admin.job-applications.show', compact('jobApplication'));
     }
 
@@ -628,7 +588,7 @@ class JobApplicationController extends Controller
     public function destroy(JobApplication $jobApplication)
     {
         $jobApplication->delete();
-        
+
         return redirect()->route('admin.job-applications.index')->with('status', 'Application deleted.');
     }
 
@@ -651,5 +611,25 @@ class JobApplicationController extends Controller
         $filename = preg_replace('/[^A-Za-z0-9\-_.]/', '-', $filename);
 
         return $pdf->download($filename);
+    }
+
+
+    public function previewBlankPdf()
+    {
+        $jobApplication = new \App\Models\JobApplication();
+
+        // Empty collections/relations
+        $jobApplication->workHistories = collect();
+        $jobApplication->educations = collect();
+        $jobApplication->references = collect();
+        $jobApplication->training = (object)['mandatory_training' => []];
+        $jobApplication->immunisation = (object)[];
+
+        $pdf = Pdf::loadView('admin.job-applications.dummy-pdf', [
+            'jobApplication' => $jobApplication,
+            'isBlankPreview' => true,
+        ]);
+
+        return $pdf->stream('job-application-form-blank.pdf');
     }
 }

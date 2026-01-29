@@ -18,7 +18,7 @@ return new class extends Migration
 
             // Replace old current_pay with amount + frequency
             $table->decimal('current_pay_amount', 8, 2)->nullable()->after('current_job_title');
-            $table->enum('current_pay_frequency', ['hour', 'week', 'month'])->nullable()->after('current_pay_amount');
+            $table->enum('current_pay_frequency', ['hour', 'week', 'month','year'])->nullable()->after('current_pay_amount');
         });
     }
 

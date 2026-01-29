@@ -5,9 +5,19 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 text-gray-800">Job Applications</h1>
-    <a href="{{ route('job-application.start') }}" class="btn btn-primary" target="_blank">
-        <i class="fas fa-external-link-alt mr-1"></i> Job Application Form
-    </a>
+    <div>
+        <!-- Original link to the public form -->
+        <a href="{{ route('job-application.start') }}" class="btn btn-primary me-2" target="_blank">
+            <i class="fas fa-external-link-alt mr-1"></i> Job Application Form
+        </a>
+
+        <!-- New button: Preview Blank PDF Template -->
+        <a href="{{ route('preview-blank-pdf') }}" 
+            class="btn btn-info" 
+            target="_blank">
+                <i class="fas fa-eye mr-1"></i> Preview Blank PDF
+        </a>
+    </div>
 </div>
 
 @if(session('status'))

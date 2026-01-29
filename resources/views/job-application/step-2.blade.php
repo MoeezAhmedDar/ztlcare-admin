@@ -19,7 +19,7 @@
         <form action="{{ route('job-application.store-step', 2) }}" method="POST">
             @csrf
 
-            <!-- Show all validation errors at the top (optional but helpful) -->
+            <!-- Show all validation errors at the top -->
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <strong>Please fix the following errors:</strong>
@@ -36,6 +36,7 @@
                     Current Job
                 </div>
                 <div class="card-body">
+
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="current_job_title">Job Title <span class="text-danger">*</span></label>
@@ -45,7 +46,19 @@
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group col-md-3">
+
+                        <div class="form-group col-md-6">
+                            <label for="current_employer_name">Name of Employer / Organisation <span class="text-danger">*</span></label>
+                            <input type="text" name="current_employer_name" id="current_employer_name" class="form-control" 
+                                   value="{{ old('current_employer_name', $formData['step_2']['current_employer_name'] ?? '') }}" required>
+                            @error('current_employer_name')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
                             <label for="current_pay_amount">Current Pay £</label>
                             <div class="input-group">
                                 <input type="number" step="0.01" name="current_pay_amount" id="current_pay_amount" class="form-control" 
@@ -53,9 +66,10 @@
                                 <div class="input-group-append">
                                     <select name="current_pay_frequency" id="current_pay_frequency" class="form-control">
                                         <option value="">Select</option>
-                                        <option value="hour" {{ old('current_pay_frequency', $formData['step_2']['current_pay_frequency'] ?? '') === 'hour' ? 'selected' : '' }}>per hour</option>
-                                        <option value="week" {{ old('current_pay_frequency', $formData['step_2']['current_pay_frequency'] ?? '') === 'week' ? 'selected' : '' }}>per week</option>
-                                        <option value="month" {{ old('current_pay_frequency', $formData['step_2']['current_pay_frequency'] ?? '') === 'month' ? 'selected' : '' }}>per month</option>
+                                        <option value="hour" {{ old('current_pay_frequency', $formData['step_2']['current_pay_frequency'] ?? '') == 'hour' ? 'selected' : '' }}>per hour</option>
+                                        <option value="week" {{ old('current_pay_frequency', $formData['step_2']['current_pay_frequency'] ?? '') == 'week' ? 'selected' : '' }}>per week</option>
+                                        <option value="month" {{ old('current_pay_frequency', $formData['step_2']['current_pay_frequency'] ?? '') == 'month' ? 'selected' : '' }}>per month</option>
+                                        <option value="year" {{ old('current_pay_frequency', $formData['step_2']['current_pay_frequency'] ?? '') == 'year' ? 'selected' : '' }}>per year</option>
                                     </select>
                                 </div>
                             </div>
@@ -66,13 +80,14 @@
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="form-group col-md-3">
+
+                        <div class="form-group col-md-6">
                             <label for="current_shift_type">Day/Night Shift</label>
                             <select name="current_shift_type" id="current_shift_type" class="form-control">
                                 <option value="">Select</option>
-                                <option value="Day" {{ old('current_shift_type', $formData['step_2']['current_shift_type'] ?? '') === 'Day' ? 'selected' : '' }}>Day</option>
-                                <option value="Night" {{ old('current_shift_type', $formData['step_2']['current_shift_type'] ?? '') === 'Night' ? 'selected' : '' }}>Night</option>
-                                <option value="Both" {{ old('current_shift_type', $formData['step_2']['current_shift_type'] ?? '') === 'Both' ? 'selected' : '' }}>Both</option>
+                                <option value="Day" {{ old('current_shift_type', $formData['step_2']['current_shift_type'] ?? '') == 'Day' ? 'selected' : '' }}>Day</option>
+                                <option value="Night" {{ old('current_shift_type', $formData['step_2']['current_shift_type'] ?? '') == 'Night' ? 'selected' : '' }}>Night</option>
+                                <option value="Both" {{ old('current_shift_type', $formData['step_2']['current_shift_type'] ?? '') == 'Both' ? 'selected' : '' }}>Both</option>
                             </select>
                             @error('current_shift_type')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
@@ -108,13 +123,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="current_place_of_work">Current Place of Work</label>
+                        <label for="current_place_of_work">Current Place of Work / Location</label>
                         <input type="text" name="current_place_of_work" id="current_place_of_work" class="form-control" 
                                value="{{ old('current_place_of_work', $formData['step_2']['current_place_of_work'] ?? '') }}">
                         @error('current_place_of_work')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
                     </div>
+
                 </div>
             </div>
 

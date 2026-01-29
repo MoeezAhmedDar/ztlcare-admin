@@ -88,6 +88,12 @@ Route::post('/logout', function (Request $request) {
     return redirect('/');
 })->middleware('auth')->name('logout');
 
+
+Route::get('/preview-blank-pdf', [JobApplicationController::class, 'previewBlankPdf'])
+    ->name('preview-blank-pdf')
+    ->withoutMiddleware(['auth', 'verified', 'role:admin']);
+
+    
 // Protected Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     // Dashboard
@@ -118,6 +124,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
         Route::patch('/{jobApplication}/status', [JobApplicationController::class, 'updateStatus'])->name('update-status')->middleware('permission:view job applications'); // or more specific perm
         Route::delete('/{jobApplication}', [JobApplicationController::class, 'destroy'])->name('destroy')->middleware('permission:view job applications');
     });
+   
 
     // Questionnaire Management
     Route::prefix('questionnaire')->name('questionnaire.')->middleware('permission:manage questionnaire')->group(function () {

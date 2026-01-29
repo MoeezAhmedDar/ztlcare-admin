@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('mobile_number')->nullable();
             $table->string('landline')->nullable();
             $table->string('email')->nullable();
-            
+            $table->string('position_applying_for')->nullable();
             // Emergency Contact
             $table->string('next_of_kin_name')->nullable();
             $table->string('next_of_kin_relationship')->nullable();
@@ -40,6 +40,7 @@ return new class extends Migration
             
             // Current Job
             $table->string('current_job_title')->nullable();
+            $table->string('current_employer_name')->nullable();
             $table->decimal('current_pay', 10, 2)->nullable();
             $table->text('current_duties')->nullable();
             $table->string('current_place_of_work')->nullable();
