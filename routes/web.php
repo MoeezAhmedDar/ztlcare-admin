@@ -148,28 +148,40 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     });
 
     Route::get('/invite-portal', [InviteController::class, 'index'])->name('invite.portal');
+    Route::get('/invite/preview-static', [InviteController::class, 'previewStatic'])
+    ->name('invite.preview-static');
     Route::post('/invite-store', [InviteController::class, 'store'])->name('invite.store');
     Route::get('/invite-download/{id}', [InviteController::class, 'download'])->name('invite.download');
 
     Route::get('/offer-portal', [OfferController::class, 'index'])->name('offer.portal');
+    Route::get('/offer/preview-static', [OfferController::class, 'previewStatic'])
+    ->name('offer.preview-static');
     Route::post('/offer-store', [OfferController::class, 'store'])->name('offer.store');
     Route::get('/offer-download/{id}', [OfferController::class, 'download'])->name('offer.download');
 
     Route::get('/rejection-portal', [RejectionController::class, 'index'])->name('rejection.portal')->middleware('permission:view rejection letters');
+     Route::get('/rejection/preview-static', [RejectionController::class, 'previewStatic'])
+    ->name('rejection.preview-static');
     Route::post('/rejection-store', [RejectionController::class, 'store'])->name('rejection.store');
     Route::get('/rejection-download/{id}', [RejectionController::class, 'download'])->name('rejection.download');
     Route::get('/ref-download', [RejectionController::class, 'downloadref'])->name('ref.download');
 
     Route::get('/character-portal', [CharacterController::class, 'index'])->name('character.portal');
+    Route::get('/character/preview-static', [CharacterController::class, 'previewStatic'])
+    ->name('character.preview-static');
     Route::post('/character-store', [CharacterController::class, 'store'])->name('character.store');
     Route::get('/character-download/{id}', [CharacterController::class, 'download'])->name('character.download');
 
     Route::get('/hr/reference', [ReferenceRequestController::class, 'index'])->name('reference.index');
+     Route::get('/reference/preview-static', [ReferenceRequestController::class, 'previewStatic'])
+    ->name('reference.preview-static');
     Route::post('/hr/reference', [ReferenceRequestController::class, 'store'])->name('reference.store');
     Route::get('/hr/reference/{id}/download', [ReferenceRequestController::class, 'download'])->name('reference.download');
 
     // Custom Letters
     Route::get('/custom-letters', [CustomLetterController::class, 'index'])->name('custom_letters.index');
+     Route::get('/custom/preview-static', [CustomLetterController::class, 'previewStatic'])
+    ->name('custom.preview-static');
     Route::post('/custom-letters', [CustomLetterController::class, 'store'])->name('custom_letters.store');
     Route::get('/custom-letters/{id}/download', [CustomLetterController::class, 'download'])->name('custom_letters.download');
 

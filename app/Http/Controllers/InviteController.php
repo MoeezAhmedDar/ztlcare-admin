@@ -24,6 +24,43 @@ class InviteController extends Controller
         return view('hr.invite-portal', compact('letters', 'applicants'));
     }
 
+    public function previewStatic()
+    {
+        // Fake/example data – matches your Blade fallbacks
+        $letter = new \stdClass();  // or use your model if you prefer, but no save needed
+
+        $letter->id              = 'PREVIEW';
+        $letter->date            = now()->format('Y-m-d');
+        $letter->to_name         = 'Example Applicant';
+        $letter->position        = 'Care Support Worker';
+        $letter->time            = '14:00';
+        $letter->interview_date  = now()->addDays(10)->format('Y-m-d');
+        $letter->font_size       = 10.00;
+        $letter->custom_documents = null;  // → will trigger default documents list
+        $letter->applicant       = (object) ['full_name' => 'Example Applicant'];
+
+        // Same logo handling as in download()
+        $logoPath = public_path('images/logo.png');
+        $logoBase64 = file_exists($logoPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
+            : null;
+
+        // If you also have waves in your real template, add it the same way
+        $wavesPath = public_path('images/waves.png'); // adjust filename/path
+        $wavesBase64 = file_exists($wavesPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($wavesPath))
+            : null;
+
+        $pdf = PDF::loadView('pdf.interview-invitation-example', compact('letter'));
+
+        // Optional: same paper/margin settings as your real letters (if configured globally, skip)
+        $pdf->setPaper('A4', 'portrait');
+        // $pdf->setOptions(['dpi' => 96, 'defaultFont' => 'Arial']); // if needed
+
+        // Stream inline (preview) instead of forcing download
+        return $pdf->download('Interview-Invite-Example.pdf');
+    }
+
    public function store(Request $request)
     {
         $data = $request->validate([

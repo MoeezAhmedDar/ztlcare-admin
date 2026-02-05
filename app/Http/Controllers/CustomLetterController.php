@@ -50,6 +50,34 @@ class CustomLetterController extends Controller
             ->with('success', 'Letter saved & downloading...');
     }
 
+    public function previewStatic()
+    {
+        // Minimal fake data (only what's actually used)
+        $letter = new \stdClass();
+        $letter->font_size = 10.00;
+        // We don't need show_date, greeting_type, dear_name, body_content → hardcoded in Blade
+
+        // Same logo & waves as your other PDFs
+        $logoPath = public_path('images/logo.png');
+        $logoBase64 = file_exists($logoPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
+            : null;
+
+        $wavesPath = public_path('images/waves.png'); // adjust filename/path if needed
+        $wavesBase64 = file_exists($wavesPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($wavesPath))
+            : null;
+
+        $pdf = PDF::loadView('pdf.general-letter-example', compact(
+            'letter',
+        ));
+
+        $pdf->setPaper('A4', 'portrait');
+
+        // Stream = open in browser as preview
+        return $pdf->download('General-Letter-Example.pdf');
+    }
+
     public function download($id)
     {
         $letter = CustomLetter::findOrFail($id);

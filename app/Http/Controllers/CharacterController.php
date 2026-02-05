@@ -52,6 +52,39 @@ class CharacterController extends Controller
             ->with('success', 'Character reference created & downloading...');
     }
 
+    public function previewStatic()
+    {
+        // Fake/example data
+        $letter = new \stdClass();
+        $letter->id         = 'PREVIEW';
+        $letter->date       = now()->format('Y-m-d');
+        $letter->dear       = 'Sir / Madam';
+        $letter->applicant  = (object) ['full_name' => 'Example Applicant Name'];
+        $letter->position   = 'Care Support Worker';
+        $letter->custom_body = null; // → uses default text
+        $letter->font_size  = 10.00;
+
+        // Same logo & waves handling
+        $logoPath = public_path('images/logo.png');
+        $logoBase64 = file_exists($logoPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
+            : null;
+
+        $wavesPath = public_path('images/waves.png'); // adjust path/filename if needed
+        $wavesBase64 = file_exists($wavesPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($wavesPath))
+            : null;
+
+        $pdf = PDF::loadView('pdf.character-reference-example', compact(
+            'letter',
+        ));
+
+        $pdf->setPaper('A4', 'portrait');
+
+        // Stream for browser preview
+        return $pdf->download('Character-Reference-Example.pdf');
+    }
+
    public function download($id)
     {
         // Eager-load applicant relationship for live name

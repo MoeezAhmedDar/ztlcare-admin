@@ -5,7 +5,12 @@
 @section('content')
 <div class="container">
     <h1 class="text-center mb-4 text-primary">ZTL CARE Character Reference Portal</h1>
-
+    <div class="text-center mb-4">
+        <a href="{{ route('character.preview-static') }}" 
+           class="btn btn-lg btn-outline-info">
+            Preview character Letter (Example Layout)
+        </a>
+    </div>
     <!-- FORM -->
     <div class="card mb-5">
         <div class="card-header bg-primary text-white h5">Create Character Reference Letter</div>

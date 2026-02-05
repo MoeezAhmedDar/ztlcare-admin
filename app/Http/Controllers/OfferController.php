@@ -41,7 +41,7 @@ class OfferController extends Controller
             'date'                  => $validated['date'],
             'to_user_id'            => $validated['to_user_id'],
             'to_name'               => $applicant->full_name, // Store full name for PDF/display
-            'dear'                  => 'Dear ' . $applicant->first_name,
+            'dear'                  => 'Dear ' . $applicant->first_name ,
             'position'              => $validated['position'],
             'rate_per_hour'         => $validated['rate_per_hour'],
             'custom_offer_details'  => trim($validated['custom_offer_details'] ?? ''),
@@ -51,6 +51,36 @@ class OfferController extends Controller
         // Redirect to download the PDF
         return redirect()->route('offer.download', $offer->id)
             ->with('success', 'Offer letter created & downloading...');
+    }
+
+    public function previewStatic()
+    {
+        // Fake/example data
+        $letter = new \stdClass();
+        $letter->id         = 'PREVIEW';
+        $letter->applicant  = (object) ['full_name' => 'Example Applicant'];
+        $font_size          = 10.00;   // or you can hardcode/pass whatever you want
+
+        // Same logo & waves handling as in your download method
+        $logoPath = public_path('images/logo.png');
+        $logoBase64 = file_exists($logoPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
+            : null;
+
+        $wavesPath = public_path('images/waves.png'); // ← adjust filename if different
+        $wavesBase64 = file_exists($wavesPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($wavesPath))
+            : null;
+
+        $pdf = PDF::loadView('pdf.offer-letter-example', compact(
+            'letter',
+        ));
+
+        // Optional - match your real offer letter settings if you have them
+        $pdf->setPaper('A4', 'portrait');
+
+        // Stream = show in browser (preview)
+        return $pdf->download('Offer-Letter-Example.pdf');
     }
 
     // In your controller (e.g., OfferController.php)

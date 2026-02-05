@@ -5,7 +5,12 @@
 @section('content')
 <div class="container">
     <h1 class="text-center mb-4 text-primary">ZTL CARE Rejection Portal</h1>
-
+     <div class="text-center mb-4">
+        <a href="{{ route('rejection.preview-static') }}" 
+           class="btn btn-lg btn-outline-info">
+            Preview Rejection Letter (Example Layout)
+        </a>
+    </div>
     <!-- CREATE REJECTION FORM -->
     <div class="card mb-5 shadow-sm">
         <div class="card-header bg-primary text-white h5">Create Rejection Letter</div>

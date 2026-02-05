@@ -80,6 +80,35 @@ class RejectionController extends Controller
         return $pdf->download('ZTL-Rejection-Letter-' . $rejection->id . '.pdf');
     }
 
+    public function previewStatic()
+    {
+        // Fake/example data
+        $letter = new \stdClass();
+        $letter->id         = 'PREVIEW';
+        $letter->applicant  = (object) ['full_name' => 'Example Applicant'];
+        $font_size          = 10.00;
+
+        // Same logo & waves handling as your other methods
+        $logoPath = public_path('images/logo.png');
+        $logoBase64 = file_exists($logoPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
+            : null;
+
+        $wavesPath = public_path('images/waves.png'); // adjust filename/path if different
+        $wavesBase64 = file_exists($wavesPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($wavesPath))
+            : null;
+
+        $pdf = PDF::loadView('pdf.rejection-letter-example', compact(
+            'letter',
+        ));
+
+        $pdf->setPaper('A4', 'portrait');
+
+        // Stream = inline preview in browser
+        return $pdf->download('Rejection-Letter-Example.pdf');
+    }
+
     public function downloadref()
     {
         $data = [

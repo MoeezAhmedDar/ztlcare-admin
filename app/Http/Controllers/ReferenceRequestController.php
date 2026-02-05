@@ -48,6 +48,33 @@ class ReferenceRequestController extends Controller
             ->with('success', 'Reference request saved and PDF generated!');
     }
 
+    public function previewStatic()
+    {
+        // Minimal fake object (most fields not used in example view)
+        $ref = new \stdClass();
+        $ref->font_size = 10.00;
+
+        // Same logo & waves handling as your other PDFs
+        $logoPath = public_path('images/logo.png');
+        $logoBase64 = file_exists($logoPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath))
+            : null;
+
+        $wavesPath = public_path('images/waves.png'); // adjust if filename different
+        $wavesBase64 = file_exists($wavesPath)
+            ? 'data:image/png;base64,' . base64_encode(file_get_contents($wavesPath))
+            : null;
+
+        $pdf = PDF::loadView('pdf.reference-request-example', compact(
+            'ref',
+        ));
+
+        $pdf->setPaper('A4', 'portrait');
+
+        // Inline preview (stream)
+        return $pdf->download('Reference-Request-Form-Example.pdf');
+    }
+
     public function download($id)
     {
         // Eager-load applicant for live name in PDF

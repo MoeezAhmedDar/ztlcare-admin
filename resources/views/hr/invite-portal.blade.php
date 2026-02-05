@@ -5,7 +5,12 @@
 @section('content')
 <div class="container">
     <h1 class="text-center mb-4">ZTL CARE Invite Portal</h1>
-    
+    <div class="text-center mb-4">
+        <a href="{{ route('invite.preview-static') }}" 
+           class="btn btn-lg btn-outline-info">
+            Preview Invite Letter (Example Layout)
+        </a>
+    </div>
     <!-- FORM -->
     <div class="card mb-5">
         <div class="card-header bg-primary text-white"><strong>Create New Invite</strong></div>

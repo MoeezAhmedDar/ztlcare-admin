@@ -6,6 +6,12 @@
 <div class="container py-4">
     <h1 class="text-center mb-4 text-primary fw-bold">ZTL CARE – Custom Letter Creator</h1>
 
+     <div class="text-center mb-4">
+        <a href="{{ route('custom.preview-static') }}" 
+           class="btn btn-lg btn-outline-info">
+            Preview Custom Letter (Example Layout)
+        </a>
+    </div>
     <!-- CREATE FORM -->
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-primary text-white h5">Create New Letter</div>

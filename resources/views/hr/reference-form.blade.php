@@ -6,6 +6,12 @@
 <div class="container">
     <h1 class="text-center mb-4 text-primary">ZTL CARE Reference Request Portal</h1>
 
+     <div class="text-center mb-4">
+        <a href="{{ route('reference.preview-static') }}" 
+           class="btn btn-lg btn-outline-info">
+            Preview Reference Letter (Example Layout)
+        </a>
+    </div>
     <!-- FORM -->
     <div class="card mb-5">
         <div class="card-header bg-primary text-white h5">Create Reference Request</div>
